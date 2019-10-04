@@ -1,7 +1,12 @@
+# s7
+repl
+
+# object files
 *.o
+*.so
 *.a
-*.bak
 *.lib
+
 # watcom
 *.obj
 *.err
@@ -32,6 +37,8 @@ tags
 # visual code
 .vscode/
 
+# more
+*.bak
 *.log
 *.gz
 .*.swp
