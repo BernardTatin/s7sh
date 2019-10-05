@@ -16,7 +16,7 @@ CC = gcc
 CCNAME = gcc
 FLAGS = -Wall -Wextra
 # -pedantic  
-DFLAGS = -DUSE_SND=0 
+DFLAGS = -DUSE_SND=0 -DWITH_SYSTEM_EXTRAS=1
 IFLAGS = -I.
 OFLAGS = -O2
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
@@ -41,4 +41,7 @@ clean:
 test: all 
 	./$(_exe)
 
-.PHONY: all clean install test
+test-load: all
+	./$(_exe)  more-tests/fact.scm more-tests/show-facts.scm
+
+.PHONY: all clean install test test-load
