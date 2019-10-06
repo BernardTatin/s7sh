@@ -2,7 +2,7 @@
 ;; path-to-list.scm
 ;;
 
-(define (path-to-list)
+(define (path-to-list path)
   (define (safe-rev-append the-list element)
     (if (not the-list)
         (list element)
@@ -14,10 +14,6 @@
             (reverse (safe-rev-append acc new-path))
             (mk-path-list (safe-rev-append acc (substring new-path 0 position))
                           (substring new-path (+ 1 position))))))
-    (mk-path-list '() (getenv "PATH")))
+    (mk-path-list '() path))
 
-(define (show-path)
-  (for-each (lambda(element) (format #t "-> ~A~%" element)) (path-to-list)))
-
-(format #t "PATH: ~A~%~%~%" (getenv "PATH"))
-(show-path)
+(define *path* (path-to-list (getenv "PATH")))
