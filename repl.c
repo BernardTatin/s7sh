@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         int i;
         for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
             char *current_arg = argv[i] + 1;
-            if (*(current_arg+1) == 0) {
+            while (*current_arg != 0) {
                 switch (*current_arg) {
                     case 'h':
                         dohelp(SUCCESS);
@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
                         dohelp(FAILURE);
                         break;
                 }
+                current_arg++;
             }
         }
         for (; i<argc && ret_value==SUCCESS; i++) {
