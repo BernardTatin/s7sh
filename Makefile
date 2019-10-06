@@ -14,7 +14,7 @@ _deps = s7.h Makefile
 
 CC = gcc
 CCNAME = gcc
-FLAGS = -Wall -Wextra
+FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
 # -pedantic  
 DFLAGS = -DUSE_SND=0 -DWITH_SYSTEM_EXTRAS=1
 IFLAGS = -I.
