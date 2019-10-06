@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         for (int i=1; i<argc && ret_value==SUCCESS; i++) {
             fprintf(stderr, "load %s\n", argv[i]);
             if (!s7_load(sc, argv[i])) {
-                fprintf(stderr, "can't find %s\n", argv[i]);  /* it could also be a directory */
+                fprintf(stderr, "can't load %s\n", argv[i]);  /* it could also be a directory */
                 ret_value = FAILURE;
             }
         }
