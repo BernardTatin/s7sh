@@ -146,14 +146,14 @@
 |#
 (define (the type expr)
   (let ((e expr)
-	(bp type))
+        (bp type))
     (if (and (procedure? bp)
-	     (signature bp)
-	     (eq? 'boolean? (car (signature bp))))
-	(if (type e)
-	    e
-	    (error 'bad-type "~S is ~S but should be ~S" e (type-of e) bp))
-	(error 'bad-type "~S is not a boolean procedure" bp))))
+             (signature bp)
+             (eq? 'boolean? (car (signature bp))))
+        (if (type e)
+            e
+            (error 'bad-type "~S is ~S but should be ~S" e (type-of e) bp))
+        (error 'bad-type "~S is not a boolean procedure" bp))))
 
 (define iota 
   (let ((+documentation+ "(iota n (start 0) (incr 1)) returns a list counting from start for n:\n\
