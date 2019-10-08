@@ -7,7 +7,7 @@
 
 static char *progname = NULL;
 static const char *version = "v0.0.1";
-static const char *base_scm_lib[] = {
+static char *base_scm_lib[] = {
     "repl.scm",
     "cload.scm",
     NULL
@@ -29,62 +29,66 @@ static void doversion(const int exit_code) {
     exit (exit_code);
 }
 
-static void load_base_lib(s7_scheme *sc) {
-    for (int k=0; base_scm_lib[k] != NULL; k++) {
+static int load_base_lib(s7_scheme *sc) {
+    int ret_value = SUCCESS;
+
+    for (int k=0; ret_value == SUCCESS && base_scm_lib[k] != NULL; k++) {
+        char *lib = base_scm_lib[k];
         if (!is_quiet) {
-            fprintf(stdout, "loading %s\n", base_scm_lib[k]);
+            fprintf(stdout, "loading %s...\n", lib);
         }
-        s7_load(sc, base_scm_lib[k]);
+        if (!s7_load(sc, lib)) {
+            fprintf(stderr, "Cannot load %s\n", lib);
+            ret_value = FAILURE;
+        }
     }
+    return ret_value;
 }
 
 
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
+    int i;
     s7_scheme *sc;
     sc = s7_init();
 
-
     progname = argv[0];
-    if (argc > 1) {
-        int i;
-        for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
-            char *current_arg = argv[i] + 1;
-            while (*current_arg != 0) {
-                switch (*current_arg) {
-                    case 'h':
-                        dohelp(SUCCESS);
-                        break;
-                    case 'v':
-                        doversion(SUCCESS);
-                        break;
-                    case 'b':
-                        is_batch = true;
-                        is_quiet = true;
-                        break;
-                    case 'q':
-                        is_quiet = true;
-                        break;
-                    default:
-                        fprintf(stderr, "unknown flag (%c)\n", *current_arg);
-                        dohelp(FAILURE);
-                        break;
-                }
-                current_arg++;
+    for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
+        char *current_arg = argv[i] + 1;
+        while (*current_arg != 0) {
+            switch (*current_arg) {
+                case 'h':
+                    dohelp(SUCCESS);
+                    break;
+                case 'v':
+                    doversion(SUCCESS);
+                    break;
+                case 'b':
+                    is_batch = true;
+                    is_quiet = true;
+                    break;
+                case 'q':
+                    is_quiet = true;
+                    break;
+                default:
+                    fprintf(stderr, "unknown flag (%c)\n", *current_arg);
+                    dohelp(FAILURE);
+                    break;
             }
-        }
-        load_base_lib(sc);
-        for (; i<argc && ret_value==SUCCESS; i++) {
-            if (!is_quiet) {
-                fprintf(stderr, "load %s\n", argv[i]);
-            }
-            if (!s7_load(sc, argv[i])) {
-                fprintf(stderr, "can't load %s\n", argv[i]);  /* it could also be a directory */
-                ret_value = FAILURE;
-            }
+            current_arg++;
         }
     }
-    if (ret_value != FAILURE && !is_batch) {
+    ret_value = load_base_lib(sc);
+    for (; i<argc && ret_value==SUCCESS; i++) {
+        if (!is_quiet) {
+            fprintf(stderr, "load %s\n", argv[i]);
+        }
+        if (!s7_load(sc, argv[i])) {
+            fprintf(stderr, "can't load %s\n", argv[i]);  /* it could also be a directory */
+            ret_value = FAILURE;
+        }
+    }
+    if (ret_value == SUCCESS && !is_batch) {
         s7_eval_c_string(sc, "((*repl* 'run))");
     }
     return ret_value;
