@@ -7,12 +7,20 @@
 
 static char *progname = NULL;
 static const char *version = "v0.0.1";
+static const char *base_scm_lib[] = {
+    "repl.scm",
+    "cload.scm",
+    NULL
+};
+static bool is_quiet = false;
+static bool is_batch = false;
 
 static void dohelp(const int exit_code) {
     fprintf(stdout, "%s [-h|-v|-q]\n", progname);
     fprintf(stdout, "  -h: show this text and exits\n");
     fprintf(stdout, "  -v: show version and exits\n");
     fprintf(stdout, "  -q: quiet, suppress some messages\n");
+    fprintf(stdout, "  -b: batch, executes files and quit, implies -q\n");
     exit (exit_code);
 }
 
@@ -21,11 +29,21 @@ static void doversion(const int exit_code) {
     exit (exit_code);
 }
 
+static void load_base_lib(s7_scheme *sc) {
+    for (int k=0; base_scm_lib[k] != NULL; k++) {
+        if (!is_quiet) {
+            fprintf(stdout, "loading %s\n", base_scm_lib[k]);
+        }
+        s7_load(sc, base_scm_lib[k]);
+    }
+}
+
+
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
     s7_scheme *sc;
     sc = s7_init();
-    bool is_quiet = false;
+
 
     progname = argv[0];
     if (argc > 1) {
@@ -40,6 +58,10 @@ int main(int argc, char **argv) {
                     case 'v':
                         doversion(SUCCESS);
                         break;
+                    case 'b':
+                        is_batch = true;
+                        is_quiet = true;
+                        break;
                     case 'q':
                         is_quiet = true;
                         break;
@@ -51,6 +73,7 @@ int main(int argc, char **argv) {
                 current_arg++;
             }
         }
+        load_base_lib(sc);
         for (; i<argc && ret_value==SUCCESS; i++) {
             if (!is_quiet) {
                 fprintf(stderr, "load %s\n", argv[i]);
@@ -60,8 +83,8 @@ int main(int argc, char **argv) {
                 ret_value = FAILURE;
             }
         }
-    } else {
-        s7_load(sc, "repl.scm");
+    }
+    if (!is_batch) {
         s7_eval_c_string(sc, "((*repl* 'run))");
     }
     return ret_value;
