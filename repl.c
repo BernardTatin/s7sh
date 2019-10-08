@@ -8,7 +8,6 @@
 static char *progname = NULL;
 static const char *version = "v0.0.1";
 static char *base_scm_lib[] = {
-    "repl.scm",
     "cload.scm",
     NULL
 };
@@ -29,18 +28,24 @@ static void doversion(const int exit_code) {
     exit (exit_code);
 }
 
+static int load_scm(s7_scheme *sc, const char *file_name) {
+    int ret_value = SUCCESS;
+
+    if (!is_quiet) {
+        fprintf(stdout, "loading %s...\n", file_name);
+    }
+    if (!s7_load(sc, file_name)) {
+        fprintf(stderr, "Cannot load %s\n", file_name);
+        ret_value = FAILURE;
+    }
+    return ret_value;
+}
+
 static int load_base_lib(s7_scheme *sc) {
     int ret_value = SUCCESS;
 
     for (int k=0; ret_value == SUCCESS && base_scm_lib[k] != NULL; k++) {
-        char *lib = base_scm_lib[k];
-        if (!is_quiet) {
-            fprintf(stdout, "loading %s...\n", lib);
-        }
-        if (!s7_load(sc, lib)) {
-            fprintf(stderr, "Cannot load %s\n", lib);
-            ret_value = FAILURE;
-        }
+        ret_value = load_scm(sc, base_scm_lib[k]);
     }
     return ret_value;
 }
@@ -78,18 +83,17 @@ int main(int argc, char **argv) {
             current_arg++;
         }
     }
-    ret_value = load_base_lib(sc);
-    for (; i<argc && ret_value==SUCCESS; i++) {
-        if (!is_quiet) {
-            fprintf(stderr, "load %s\n", argv[i]);
-        }
-        if (!s7_load(sc, argv[i])) {
-            fprintf(stderr, "can't load %s\n", argv[i]);  /* it could also be a directory */
-            ret_value = FAILURE;
-        }
+    if (!is_batch) {
+        ret_value = load_scm(sc, "repl.scm");
     }
-    if (ret_value == SUCCESS && !is_batch) {
-        s7_eval_c_string(sc, "((*repl* 'run))");
+    if (ret_value == SUCCESS) {
+        ret_value = load_base_lib(sc);
+        for (; i<argc && ret_value==SUCCESS; i++) {
+            ret_value = load_scm(sc, argv[i]);
+        }
+        if (ret_value == SUCCESS && !is_batch) {
+            s7_eval_c_string(sc, "((*repl* 'run))");
+        }
     }
     return ret_value;
 }
