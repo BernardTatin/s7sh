@@ -2,6 +2,8 @@
 ;; path-to-list.scm
 ;;
 
+(define-constant *HASH-TABLE-SIZE* 8192)
+
 (define (path-to-list path)
   (define (safe-rev-append the-list element)
     (if (not the-list)
@@ -24,7 +26,7 @@
     (lambda (arg) (= (access arg X_OK) 0))))
 
 (define (fill-path-hash path)
-  (let ((the-hash (make-hash-table 8192)))
+  (let ((the-hash (make-hash-table *HASH-TABLE-SIZE*)))
     (define (explore-path path)
       (define (add-file file)
         (let ((full-path (string-append path "/" file)))
