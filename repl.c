@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    if (!is_batch) {
+    if (ret_value != FAILURE && !is_batch) {
         s7_eval_c_string(sc, "((*repl* 'run))");
     }
     return ret_value;
