@@ -12,17 +12,21 @@ static char *base_scm_lib[] = {
     "more-tests/path-to-list.scm",
     NULL
 };
-#define S7_USER_CONFIG "/home/bernard/.shs7.scm"
+
+// fopen does not like ~/filename !!!
+// we must find a way to expand this
+#define S7_USER_CONFIG ".shs7.scm"
+char s7_user_conf_name[512] = "";
 static char *ui_scm_lib[] = {
-    "repl.scm",
     S7_USER_CONFIG,
+    "repl.scm",
     NULL
 };
 static bool is_quiet = false;
 static bool is_batch = false;
 
 static void dohelp(const int exit_code) {
-    fprintf(stdout, "%s [-h|-v|-q]\n", progname);
+    fprintf(stdout, "%s [-h|-v|-qb]\n", progname);
     fprintf(stdout, "  -h: show this text and exits\n");
     fprintf(stdout, "  -v: show version and exits\n");
     fprintf(stdout, "  -q: quiet, suppress some messages\n");
@@ -31,7 +35,8 @@ static void dohelp(const int exit_code) {
 }
 
 static void show_version(void) {
-    fprintf(stdout, "%s version %s (%s)\n", progname, version, __DATE__);
+    fprintf(stdout, "%s version %s (%s - %s)\n",
+            progname, version, __DATE__, __TIME__);
 }
 static void doversion(const int exit_code) {
     show_version();
@@ -68,22 +73,22 @@ static int load_ui_lib(s7_scheme *sc) {
 }
 
 static void ensure_user_conf_exists(void) {
-    FILE *s7_config_file = fopen(S7_USER_CONFIG, "r");
-    fprintf(stdout, "DEB 01\n");
+    sprintf(s7_user_conf_name, "%s/%s", getenv("HOME"), S7_USER_CONFIG);
+    // bad hack !!!!
+    ui_scm_lib[0] = s7_user_conf_name;
+    FILE *s7_config_file = fopen(s7_user_conf_name, "r");
     if (s7_config_file == NULL) {
-        fprintf(stdout, "DEB 02\n");
-        s7_config_file = fopen(S7_USER_CONFIG, "w");
+        s7_config_file = fopen(s7_user_conf_name, "w");
         if (s7_config_file != NULL) {
-            fprintf(stdout, "DEB 03\n");
-            fprintf(s7_config_file, ";; %s - created on %s\n\n", S7_USER_CONFIG, __DATE__);
+            fprintf(s7_config_file, ";; %s - created on %s - %s\n\n",
+                    s7_user_conf_name, __DATE__, __TIME__);
+            fprintf(s7_config_file, "(format #t \"%s loaded !!!~\% \")",
+                    S7_USER_CONFIG);
         }
     }
-    fprintf(stdout, "DEB 04\n");
     if (s7_config_file != NULL) {
-        fprintf(stdout, "DEB 05\n");
         fclose(s7_config_file);
     }
-    fprintf(stdout, "DEB 06\n");
 }
 
 int main(int argc, char **argv) {
