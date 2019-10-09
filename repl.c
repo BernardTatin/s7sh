@@ -9,6 +9,12 @@ static char *progname = NULL;
 static const char *version = "v0.0.1";
 static char *base_scm_lib[] = {
     "cload.scm",
+    "more-tests/path-to-list.scm",
+    NULL
+};
+static char *ui_scm_lib[] = {
+    "repl.scm",
+    "~/.shs7.scm",
     NULL
 };
 static bool is_quiet = false;
@@ -44,13 +50,20 @@ static int load_scm(s7_scheme *sc, const char *file_name) {
     return ret_value;
 }
 
-static int load_base_lib(s7_scheme *sc) {
+static int load_scm_files(s7_scheme *sc, char *scm_files[]) {
     int ret_value = SUCCESS;
 
-    for (int k=0; ret_value == SUCCESS && base_scm_lib[k] != NULL; k++) {
-        ret_value = load_scm(sc, base_scm_lib[k]);
+    for (int k=0; ret_value == SUCCESS && scm_files[k] != NULL; k++) {
+        ret_value = load_scm(sc, scm_files[k]);
     }
     return ret_value;
+}
+static int load_base_lib(s7_scheme *sc) {
+    return load_scm_files(sc, base_scm_lib);
+}
+
+static int load_ui_lib(s7_scheme *sc) {
+    return load_scm_files(sc, ui_scm_lib);
 }
 
 
@@ -87,7 +100,7 @@ int main(int argc, char **argv) {
         }
     }
     if (!is_batch) {
-        ret_value = load_scm(sc, "repl.scm");
+        ret_value = load_ui_lib(sc);
     }
     if (ret_value == SUCCESS) {
         ret_value = load_base_lib(sc);
