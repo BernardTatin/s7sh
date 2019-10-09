@@ -72,9 +72,11 @@ static int load_ui_lib(s7_scheme *sc) {
     return load_scm_files(sc, ui_scm_lib);
 }
 
-static void ensure_user_conf_exists(void) {
+static int ensure_user_conf_exists(void) {
+    int ret_value = SUCCESS;
+
     sprintf(s7_user_conf_name, "%s/%s", getenv("HOME"), S7_USER_CONFIG);
-    // bad hack !!!!
+    // TODO: remove this bad hack !!!!
     ui_scm_lib[0] = s7_user_conf_name;
     FILE *s7_config_file = fopen(s7_user_conf_name, "r");
     if (s7_config_file == NULL) {
@@ -84,11 +86,14 @@ static void ensure_user_conf_exists(void) {
                     s7_user_conf_name, __DATE__, __TIME__);
             fprintf(s7_config_file, "(format #t \"%s loaded !!!~\% \")",
                     S7_USER_CONFIG);
+        } else {
+            ret_value = FAILURE;
         }
     }
     if (s7_config_file != NULL) {
         fclose(s7_config_file);
     }
+    return ret_value;
 }
 
 int main(int argc, char **argv) {
@@ -124,8 +129,9 @@ int main(int argc, char **argv) {
         }
     }
     if (!is_batch) {
-        ensure_user_conf_exists();
-        ret_value = load_ui_lib(sc);
+        if ((ret_value = ensure_user_conf_exists()) == SUCCESS) {
+            ret_value = load_ui_lib(sc);
+        }
     }
     if (ret_value == SUCCESS) {
         ret_value = load_base_lib(sc);
