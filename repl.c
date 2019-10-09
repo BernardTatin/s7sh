@@ -96,6 +96,38 @@ static int ensure_user_conf_exists(void) {
     return ret_value;
 }
 
+static char *strue = "#t";
+static char *sfalse = "#f";
+static inline char *Cbool_to_Sbool(const bool b) {
+    if (b) {
+        return strue;
+    } else {
+        return sfalse;
+    }
+}
+// 496, $PATH can be very long...
+static char scm_code_buffer[4096];
+static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalue) {
+    sprintf(scm_code_buffer, "(define-constant %s %s)",
+            bname, Cbool_to_Sbool(bvalue));
+    s7_eval_c_string(sc, scm_code_buffer);
+}
+static void set_scm_configuration(s7_scheme *sc) {
+    set_scm_conf_bool(sc, "*quiet*", is_quiet);
+    set_scm_conf_bool(sc, "*batch*", is_batch);
+}
+
+static void set_scm_env_var(s7_scheme *sc, char *scm_varname, char *sh_varname) {
+    sprintf(scm_code_buffer, "(define-constant %s \"%s\")",
+            scm_varname, getenv(sh_varname));
+    s7_eval_c_string(sc, scm_code_buffer);
+}
+static void set_scm_environment(s7_scheme *sc) {
+    set_scm_env_var(sc, "*home*", "HOME");
+    set_scm_env_var(sc, "*base-path*", "PATH");
+    set_scm_env_var(sc, "*editor*", "EDITOR");
+    set_scm_env_var(sc, "*user*", "USER");
+}
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
     int i;
@@ -128,6 +160,8 @@ int main(int argc, char **argv) {
             current_arg++;
         }
     }
+    set_scm_configuration(sc);
+    set_scm_environment(sc);
     if (!is_batch) {
         if ((ret_value = ensure_user_conf_exists()) == SUCCESS) {
             ret_value = load_ui_lib(sc);
