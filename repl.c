@@ -23,8 +23,11 @@ static void dohelp(const int exit_code) {
     exit (exit_code);
 }
 
-static void doversion(const int exit_code) {
+static void show_version(void) {
     fprintf(stdout, "%s version %s (%s)\n", progname, version, __DATE__);
+}
+static void doversion(const int exit_code) {
+    show_version();
     exit (exit_code);
 }
 
@@ -76,7 +79,7 @@ int main(int argc, char **argv) {
                     is_quiet = true;
                     break;
                 default:
-                    fprintf(stderr, "unknown flag (%c)\n", *current_arg);
+                    fprintf(stderr, "unknown flag (-%c)\n", *current_arg);
                     dohelp(FAILURE);
                     break;
             }
@@ -92,6 +95,9 @@ int main(int argc, char **argv) {
             ret_value = load_scm(sc, argv[i]);
         }
         if (ret_value == SUCCESS && !is_batch) {
+            if (!is_quiet) {
+                show_version();
+            }
             s7_eval_c_string(sc, "((*repl* 'run))");
         }
     }
