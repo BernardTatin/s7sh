@@ -12,9 +12,10 @@ static char *base_scm_lib[] = {
     "more-tests/path-to-list.scm",
     NULL
 };
+#define S7_USER_CONFIG "/home/bernard/.shs7.scm"
 static char *ui_scm_lib[] = {
     "repl.scm",
-    "~/.shs7.scm",
+    S7_USER_CONFIG,
     NULL
 };
 static bool is_quiet = false;
@@ -66,6 +67,24 @@ static int load_ui_lib(s7_scheme *sc) {
     return load_scm_files(sc, ui_scm_lib);
 }
 
+static void ensure_user_conf_exists(void) {
+    FILE *s7_config_file = fopen(S7_USER_CONFIG, "r");
+    fprintf(stdout, "DEB 01\n");
+    if (s7_config_file == NULL) {
+        fprintf(stdout, "DEB 02\n");
+        s7_config_file = fopen(S7_USER_CONFIG, "w");
+        if (s7_config_file != NULL) {
+            fprintf(stdout, "DEB 03\n");
+            fprintf(s7_config_file, ";; %s - created on %s\n\n", S7_USER_CONFIG, __DATE__);
+        }
+    }
+    fprintf(stdout, "DEB 04\n");
+    if (s7_config_file != NULL) {
+        fprintf(stdout, "DEB 05\n");
+        fclose(s7_config_file);
+    }
+    fprintf(stdout, "DEB 06\n");
+}
 
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
@@ -100,6 +119,7 @@ int main(int argc, char **argv) {
         }
     }
     if (!is_batch) {
+        ensure_user_conf_exists();
         ret_value = load_ui_lib(sc);
     }
     if (ret_value == SUCCESS) {
