@@ -2,6 +2,8 @@
 ;; path-to-list.scm
 ;;
 
+(provide 'path-to-list.scm)
+
 (define-constant *HASH-TABLE-SIZE* 8192)
 
 (define (path-to-list path)
