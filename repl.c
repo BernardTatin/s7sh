@@ -9,7 +9,7 @@ static char *progname = NULL;
 static const char *version = "v0.0.1";
 static char *base_scm_lib[] = {
     "cload.scm",
-    "more-tests/path-to-list.scm",
+    "path-to-list.scm",
     NULL
 };
 
@@ -24,6 +24,8 @@ static char *ui_scm_lib[] = {
 };
 static bool is_quiet = false;
 static bool is_batch = false;
+// 4096, $PATH can be very long...
+static char scm_code_buffer[4096];
 
 static void dohelp(const int exit_code) {
     fprintf(stdout, "%s [-h|-v|-qb]\n", progname);
@@ -49,10 +51,15 @@ static int load_scm(s7_scheme *sc, const char *file_name) {
     if (!is_quiet) {
         fprintf(stdout, "loading %s...\n", file_name);
     }
+#if 1
+    sprintf(scm_code_buffer, "(load \"%s\")", file_name);
+    s7_eval_c_string(sc, scm_code_buffer);
+#else
     if (!s7_load(sc, file_name)) {
         fprintf(stderr, "Cannot load %s\n", file_name);
         ret_value = FAILURE;
     }
+#endif
     return ret_value;
 }
 
@@ -84,7 +91,7 @@ static int ensure_user_conf_exists(void) {
         if (s7_config_file != NULL) {
             fprintf(s7_config_file, ";; %s - created on %s - %s\n\n",
                     s7_user_conf_name, __DATE__, __TIME__);
-            fprintf(s7_config_file, "(format #t \"%s loaded !!!~\% \")",
+            fprintf(s7_config_file, "(format #t \"%s loaded !!!~%% \")",
                     S7_USER_CONFIG);
         } else {
             ret_value = FAILURE;
@@ -105,8 +112,6 @@ static inline char *Cbool_to_Sbool(const bool b) {
         return sfalse;
     }
 }
-// 496, $PATH can be very long...
-static char scm_code_buffer[4096];
 static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalue) {
     sprintf(scm_code_buffer, "(define-constant %s %s)",
             bname, Cbool_to_Sbool(bvalue));
@@ -115,6 +120,7 @@ static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalu
 static void set_scm_configuration(s7_scheme *sc) {
     set_scm_conf_bool(sc, "*quiet*", is_quiet);
     set_scm_conf_bool(sc, "*batch*", is_batch);
+    s7_eval_c_string(sc, "(set! *load-path* (cons \"./more-tests\" *load-path*))");
 }
 
 static void set_scm_env_var(s7_scheme *sc, char *scm_varname, char *sh_varname) {
