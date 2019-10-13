@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <libgen.h>
+#include <string.h>
 
 
 #include "s7.h"
@@ -51,15 +52,18 @@ static void doversion(const int exit_code) {
 }
 
 static int autoload_scm(s7_scheme *sc, char *file_name) {
-    char *symbol = basename(file_name);
+    // TODO: verify memory leaks
+    // function basename is not clear
+    char *file_name_2 = strdup(file_name);
+    char *symbol = basename(file_name_2);
     int ret_value = SUCCESS;
 
     if (!is_quiet) {
         fprintf(stdout, "autoloading %s...\n", file_name);
     }
     sprintf(scm_code_buffer, "(autoload '%s \"%s\")", symbol, file_name);
-    fprintf(stdout, "-> <%s>\n", scm_code_buffer);
     s7_eval_c_string(sc, scm_code_buffer);
+    free(file_name_2);
     return ret_value;
 }
 static int load_scm(s7_scheme *sc, const char *file_name) {
