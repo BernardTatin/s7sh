@@ -1,6 +1,7 @@
 # s7
 repl
 repl-s7
+temp-s7-output-*.c
 
 # object files
 *.o
