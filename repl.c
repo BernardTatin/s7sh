@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <libgen.h>
 
 
 #include "s7.h"
@@ -49,6 +50,18 @@ static void doversion(const int exit_code) {
     exit (exit_code);
 }
 
+static int autoload_scm(s7_scheme *sc, char *file_name) {
+    char *symbol = basename(file_name);
+    int ret_value = SUCCESS;
+
+    if (!is_quiet) {
+        fprintf(stdout, "autoloading %s...\n", file_name);
+    }
+    sprintf(scm_code_buffer, "(autoload '%s \"%s\")", symbol, file_name);
+    fprintf(stdout, "-> <%s>\n", scm_code_buffer);
+    s7_eval_c_string(sc, scm_code_buffer);
+    return ret_value;
+}
 static int load_scm(s7_scheme *sc, const char *file_name) {
     int ret_value = SUCCESS;
 
@@ -67,6 +80,15 @@ static int load_scm(s7_scheme *sc, const char *file_name) {
     return ret_value;
 }
 
+static int autoload_scm_files(s7_scheme *sc, char *scm_files[]) {
+    int ret_value = SUCCESS;
+
+    for (int k=0; ret_value == SUCCESS && scm_files[k] != NULL; k++) {
+        ret_value = autoload_scm(sc, scm_files[k]);
+    }
+    return ret_value;
+}
+
 static int load_scm_files(s7_scheme *sc, char *scm_files[]) {
     int ret_value = SUCCESS;
 
@@ -76,7 +98,7 @@ static int load_scm_files(s7_scheme *sc, char *scm_files[]) {
     return ret_value;
 }
 static int load_base_lib(s7_scheme *sc) {
-    return load_scm_files(sc, base_scm_lib);
+    return autoload_scm_files(sc, base_scm_lib);
 }
 
 static int load_ui_lib(s7_scheme *sc) {
@@ -204,13 +226,18 @@ int main(int argc, char **argv) {
     }
     set_scm_configuration(sc);
     set_scm_environment(sc);
-    if (!is_batch) {
-        if ((ret_value = ensure_user_conf_exists()) == SUCCESS) {
-            ret_value = load_ui_lib(sc);
-        }
-    }
     if (ret_value == SUCCESS) {
         ret_value = load_base_lib(sc);
+        if (ret_value == SUCCESS && !is_batch) {
+            if ((ret_value = ensure_user_conf_exists()) == SUCCESS) {
+                ret_value = load_ui_lib(sc);
+            }
+        }
+#if 0
+        if (ret_value == SUCCESS && is_batch) {
+            s7_eval_c_string(sc, "(require cload.scm)");
+        }
+#endif
         for (; i<argc && ret_value==SUCCESS; i++) {
             ret_value = load_scm(sc, argv[i]);
         }

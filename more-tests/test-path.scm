@@ -2,7 +2,7 @@
 ;; test-path.scm
 ;;
 
-(require path-to-list)
+(require path-to-list.scm)
 
 (let ((show-list (lambda (list-name L)
                    (format #t "-------------------------------~%")
