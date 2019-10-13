@@ -2,6 +2,8 @@
 ;; fact.scm
 ;;
 
+(provide 'fact.scm)
+
 (define (fact N)
   (define (inner-fact acc k)
     (if (< k 2)
