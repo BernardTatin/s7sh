@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 #include "s7.h"
@@ -28,11 +31,12 @@ static bool is_batch = false;
 static char scm_code_buffer[4096];
 
 static void dohelp(const int exit_code) {
-    fprintf(stdout, "%s [-h|-v|-qb]\n", progname);
+    fprintf(stdout, "%s [-h|-v|-qb] [-L dir-lib]\n", progname);
     fprintf(stdout, "  -h: show this text and exits\n");
     fprintf(stdout, "  -v: show version and exits\n");
     fprintf(stdout, "  -q: quiet, suppress some messages\n");
     fprintf(stdout, "  -b: batch, executes files and quit, implies -q\n");
+    fprintf(stdout, "  -L dir-lib: add dir-lib to *load-path*\n");
     exit (exit_code);
 }
 
@@ -51,7 +55,7 @@ static int load_scm(s7_scheme *sc, const char *file_name) {
     if (!is_quiet) {
         fprintf(stdout, "loading %s...\n", file_name);
     }
-#if 1
+#if 0
     sprintf(scm_code_buffer, "(load \"%s\")", file_name);
     s7_eval_c_string(sc, scm_code_buffer);
 #else
@@ -112,6 +116,24 @@ static inline char *Cbool_to_Sbool(const bool b) {
         return sfalse;
     }
 }
+
+static bool is_read_dir(char *dir_name) {
+    struct stat statbuf;
+    if (stat(dir_name, &statbuf) != 0) {
+        return false;
+    } else if ((statbuf.st_mode & S_IFMT) != S_IFDIR) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+static void add_lib_dir(s7_scheme *sc, const char *lib_dir) {
+    sprintf(scm_code_buffer,
+            "(set! *load-path* (cons \"%s\" *load-path*))",
+            lib_dir);
+    s7_eval_c_string(sc, scm_code_buffer);
+}
 static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalue) {
     sprintf(scm_code_buffer, "(define-constant %s %s)",
             bname, Cbool_to_Sbool(bvalue));
@@ -120,7 +142,7 @@ static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalu
 static void set_scm_configuration(s7_scheme *sc) {
     set_scm_conf_bool(sc, "*quiet*", is_quiet);
     set_scm_conf_bool(sc, "*batch*", is_batch);
-    s7_eval_c_string(sc, "(set! *load-path* (cons \"./more-tests\" *load-path*))");
+    // add_lib_dir(sc, "more-tests");
 }
 
 static void set_scm_env_var(s7_scheme *sc, char *scm_varname, char *sh_varname) {
@@ -157,6 +179,20 @@ int main(int argc, char **argv) {
                     break;
                 case 'q':
                     is_quiet = true;
+                    break;
+                case 'L':
+                    i++;
+                    if (i >= argc) {
+                        fprintf(stderr, "-L flag needs a directory name\n");
+                        dohelp(FAILURE);
+                    } else if (!is_read_dir(argv[i])) {
+                        fprintf(stderr,
+                                "%s is not a directory or you don't have read access\n",
+                                argv[i]);
+                        dohelp(FAILURE);
+                    } else {
+                        add_lib_dir(sc, argv[i]);
+                    }
                     break;
                 default:
                     fprintf(stderr, "unknown flag (-%c)\n", *current_arg);
