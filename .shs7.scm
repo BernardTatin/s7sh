@@ -11,4 +11,3 @@
     (format #t "USER ~A~%" *user*)
     (format #t "*quiet* ~A~%" *quiet*)
     (format #t "*batch* ~A~%" *batch*)))
-(define quit (lambda() (exit)))
