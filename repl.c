@@ -13,6 +13,7 @@
 static char *progname = NULL;
 static const char *version = "v0.0.1";
 static char *base_scm_lib[] = {
+    "basic-lib.scm",
     "cload.scm",
     "path-to-list.scm",
     NULL
@@ -72,15 +73,10 @@ static int load_scm(s7_scheme *sc, const char *file_name) {
     if (!is_quiet) {
         fprintf(stdout, "loading %s...\n", file_name);
     }
-#if 0
-    sprintf(scm_code_buffer, "(load \"%s\")", file_name);
-    s7_eval_c_string(sc, scm_code_buffer);
-#else
     if (!s7_load(sc, file_name)) {
         fprintf(stderr, "Cannot load %s\n", file_name);
         ret_value = FAILURE;
     }
-#endif
     return ret_value;
 }
 
@@ -168,7 +164,6 @@ static void set_scm_conf_bool(s7_scheme *sc, const char *bname, const bool bvalu
 static void set_scm_configuration(s7_scheme *sc) {
     set_scm_conf_bool(sc, "*quiet*", is_quiet);
     set_scm_conf_bool(sc, "*batch*", is_batch);
-    // add_lib_dir(sc, "more-tests");
 }
 
 static void set_scm_env_var(s7_scheme *sc, char *scm_varname, char *sh_varname) {
@@ -237,11 +232,6 @@ int main(int argc, char **argv) {
                 ret_value = load_ui_lib(sc);
             }
         }
-#if 0
-        if (ret_value == SUCCESS && is_batch) {
-            s7_eval_c_string(sc, "(require cload.scm)");
-        }
-#endif
         for (; i<argc && ret_value==SUCCESS; i++) {
             ret_value = load_scm(sc, argv[i]);
         }
