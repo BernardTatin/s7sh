@@ -15,14 +15,14 @@ _deps = s7.h Makefile
 CC = gcc
 CCNAME = gcc
 FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
-# -pedantic  
+# -pedantic
 DFLAGS = -DUSE_SND=0 -DWITH_SYSTEM_EXTRAS=1
 IFLAGS = -I.
-OFLAGS = -O2
+OFLAGS = -O2 -pthread
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = gcc
-LFLAGS =  -ldl -lm -Wl,-export-dynamic
+LFLAGS =  -ldl -lm -lpthread -Wl,-export-dynamic
 
 all: $(_odir) $(_exe)
 
@@ -38,10 +38,13 @@ $(_odir)/%.o: %.c $(_deps)
 clean:
 	@rm -fv $(_exe) $(_objs)
 
-test: all 
+full-clean: clean
+	@rm -fv *.log *.o *.so
+
+test: all
 	./$(_exe)
 
 test-load: all
 	./$(_exe)  more-tests/fact.scm more-tests/show-facts.scm
 
-.PHONY: all clean install test test-load
+.PHONY: all clean install test test-load full-clean

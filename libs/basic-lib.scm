@@ -29,15 +29,15 @@
                                     (when (not (in-features? ,sym))
                                       (with-let (rootlet)
                                                 (provide ,sym))))))
-                 (let ((directory 
+                 (let ((directory
                          (let ((current-file (port-filename)))
                            (begin
                              ;; TODO: verify problems with length
                              (and (memv (current-file 0) '(#\/ #\~ #\.))
-                                  (substring 
-                                    current-file 
-                                    0 
-                                    (- (length current-file) 
+                                  (substring
+                                    current-file
+                                    0
+                                    (- (length current-file)
                                        (+ 1 (length (symbol->string ,sym))))))))))
                    (when (and directory (not (in-load-path? directory)))
                      (provide-sym)
@@ -47,7 +47,10 @@
 (full-provide 'basic-lib.scm)
 
 ;; debugging full-provide
-(when (not *quiet*)
+(when (and (not *quiet*) (not (defined? 'pretty-print)))
+  (load "write.scm"))
+
+(when (and (not *quiet*) (defined? 'pretty-print))
   (let ((show-list (lambda (list-name L)
                      (format #t "-------------------------------~%")
                      (format #t "~A~%" list-name)
@@ -55,7 +58,7 @@
                      (format #t "~%~%"))))
 
     (show-list "*features*" *features*)
-    (show-list "*load-path*:" *load-path*)))
-(format #t "~%")
-(pretty-print (macroexpand (full-provide 'basic-lib.scm)))
-(format #t "~%~%")
+    (show-list "*load-path*:" *load-path*)
+    (format #t "~%")
+    (pretty-print (macroexpand (full-provide 'basic-lib.scm)))
+    (format #t "~%~%")))

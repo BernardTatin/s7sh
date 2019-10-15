@@ -4618,7 +4618,7 @@ void libc_s7_init(s7_scheme *sc);
 void libc_s7_init(s7_scheme *sc)
 {
   s7_pointer cur_env;
-  s7_pointer pcl_t, pcl_di, pl_tx, pl_ts, pl_ds, pl_ti, pl_txs, pcl_s, pl_sx, pl_st, pl_si, pl_sis, pl_ssi, pl_sisi, pl_sssi, pl_ssix, pcl_x, pl_xs, pcl_xi, pl_xi, pl_xt, pcl_xs, pl_xxi, pcl_xxi, pcl_xsi, pl_xis, pl_xxxi, pl_xssx, pl_iixiixi, pcl_i, pl_ix, pl_it, pcl_is, pl_is, pcl_ix, pcl_iix, pcl_isi, pl_ixi, pl_isi, pcl_ixi, pl_iix, pl_isx, pl_isxi, pl_iisi, pcl_iixi, pl_iixi, pl_issi, pl_ixxi, pcl_ixsi, pl_iiixi, pl_ixiix;
+  s7_pointer pcl_t, pl_tx, pl_ts, pl_ti, pl_txs, pcl_di, pl_ds, pcl_s, pl_sx, pl_st, pl_si, pl_sis, pl_ssi, pl_sisi, pl_sssi, pl_ssix, pcl_x, pl_xs, pcl_xi, pl_xi, pl_xt, pcl_xs, pl_xxi, pcl_xxi, pcl_xsi, pl_xis, pl_xxxi, pl_xssx, pcl_i, pl_ix, pl_it, pcl_is, pl_is, pcl_ix, pcl_iix, pcl_isi, pl_ixi, pl_isi, pcl_ixi, pl_iix, pl_isx, pl_isxi, pl_iisi, pcl_iixi, pl_iixi, pl_issi, pl_ixxi, pcl_ixsi, pl_iiixi, pl_ixiix, pl_iixiixi;
   {
     s7_pointer t, x, s, d, i;
     t = s7_t(sc);
@@ -4628,12 +4628,12 @@ void libc_s7_init(s7_scheme *sc)
     i = s7_make_symbol(sc, "integer?");
 
     pcl_t = s7_make_circular_signature(sc, 0, 1, t);
-    pcl_di = s7_make_circular_signature(sc, 1, 2, d, i);
     pl_tx = s7_make_signature(sc, 2, t, x);
     pl_ts = s7_make_signature(sc, 2, t, s);
-    pl_ds = s7_make_signature(sc, 2, d, s);
     pl_ti = s7_make_signature(sc, 2, t, i);
     pl_txs = s7_make_signature(sc, 3, t, x, s);
+    pcl_di = s7_make_circular_signature(sc, 1, 2, d, i);
+    pl_ds = s7_make_signature(sc, 2, d, s);
     pcl_s = s7_make_circular_signature(sc, 0, 1, s);
     pl_sx = s7_make_signature(sc, 2, s, x);
     pl_st = s7_make_signature(sc, 2, s, t);
@@ -4655,7 +4655,6 @@ void libc_s7_init(s7_scheme *sc)
     pl_xis = s7_make_signature(sc, 3, x, i, s);
     pl_xxxi = s7_make_signature(sc, 4, x, x, x, i);
     pl_xssx = s7_make_signature(sc, 4, x, s, s, x);
-    pl_iixiixi = s7_make_signature(sc, 7, i, i, x, i, i, x, i);
     pcl_i = s7_make_circular_signature(sc, 0, 1, i);
     pl_ix = s7_make_signature(sc, 2, i, x);
     pl_it = s7_make_signature(sc, 2, i, t);
@@ -4678,6 +4677,7 @@ void libc_s7_init(s7_scheme *sc)
     pcl_ixsi = s7_make_circular_signature(sc, 3, 4, i, x, s, i);
     pl_iiixi = s7_make_signature(sc, 5, i, i, i, x, i);
     pl_ixiix = s7_make_signature(sc, 5, i, x, i, i, x);
+    pl_iixiixi = s7_make_signature(sc, 7, i, i, x, i, i, x, i);
   }
 
   cur_env = s7_curlet(sc);

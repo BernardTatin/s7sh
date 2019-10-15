@@ -1,3 +1,8 @@
+/*
+ * repl.c
+ * REPL for a shell in s7 Scheme
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -11,17 +16,16 @@
 #include "repl-s7.h"
 
 static char *progname = NULL;
-static const char *version = "v0.0.1";
+static char *s7_home = NULL;
 static char *base_scm_lib[] = {
-    "basic-lib.scm",
     "cload.scm",
+    "libc.scm",
+    "libdl.scm",
+    "basic-lib.scm",
     "path-to-list.scm",
     NULL
 };
 
-// fopen does not like ~/filename !!!
-// we must find a way to expand this
-#define S7_USER_CONFIG ".shs7.scm"
 char s7_user_conf_name[512] = "";
 static char *ui_scm_lib[] = {
     S7_USER_CONFIG,
@@ -31,24 +35,24 @@ static char *ui_scm_lib[] = {
 static bool is_quiet = false;
 static bool is_batch = false;
 // 4096, $PATH can be very long...
-static char scm_code_buffer[4096];
+static char scm_code_buffer[SCM_CODE_BUFFER_LEN];
 
 static void dohelp(const int exit_code) {
     fprintf(stdout, "%s [-h|-v|-qb] [-L dir-lib]\n", progname);
     fprintf(stdout, "  -h: show this text and exits\n");
-    fprintf(stdout, "  -v: show version and exits\n");
+    fprintf(stdout, "  -v: show VERSION and exits\n");
     fprintf(stdout, "  -q: quiet, suppress some messages\n");
     fprintf(stdout, "  -b: batch, executes files and quit, implies -q\n");
     fprintf(stdout, "  -L dir-lib: add dir-lib to *load-path*\n");
     exit (exit_code);
 }
 
-static void show_version(void) {
-    fprintf(stdout, "%s version %s (%s - %s)\n",
-            progname, version, __DATE__, __TIME__);
+static void show_VERSION(void) {
+    fprintf(stdout, "%s VERSION %s (%s - %s)\n",
+            progname, VERSION, __DATE__, __TIME__);
 }
-static void doversion(const int exit_code) {
-    show_version();
+static void do_VERSION(const int exit_code) {
+    show_VERSION();
     exit (exit_code);
 }
 
@@ -67,6 +71,7 @@ static int autoload_scm(s7_scheme *sc, char *file_name) {
     free(file_name_2);
     return ret_value;
 }
+
 static int load_scm(s7_scheme *sc, const char *file_name) {
     int ret_value = SUCCESS;
 
@@ -177,13 +182,16 @@ static void set_scm_environment(s7_scheme *sc) {
     set_scm_env_var(sc, "*editor*", "EDITOR");
     set_scm_env_var(sc, "*user*", "USER");
 }
+
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
     int i;
     s7_scheme *sc;
     sc = s7_init();
 
-    progname = argv[0];
+    progname = basename(argv[0]);
+    s7_home = dirname(argv[0]);
+    fprintf(stderr, "s7_home: <%s>\n", s7_home);
     for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
         char *current_arg = argv[i] + 1;
         while (*current_arg != 0) {
@@ -192,7 +200,7 @@ int main(int argc, char **argv) {
                     dohelp(SUCCESS);
                     break;
                 case 'v':
-                    doversion(SUCCESS);
+                    do_VERSION(SUCCESS);
                     break;
                 case 'b':
                     is_batch = true;
@@ -237,7 +245,7 @@ int main(int argc, char **argv) {
         }
         if (ret_value == SUCCESS && !is_batch) {
             if (!is_quiet) {
-                show_version();
+                show_VERSION();
             }
             s7_eval_c_string(sc, "((*repl* 'run))");
         }
