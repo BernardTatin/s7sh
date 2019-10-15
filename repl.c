@@ -17,6 +17,8 @@
 
 static char *progname = NULL;
 static char *s7_home = NULL;
+static char *s7_libs = NULL;
+
 static char *base_scm_lib[] = {
     "cload.scm",
     "libc.scm",
@@ -183,14 +185,71 @@ static void set_scm_environment(s7_scheme *sc) {
     set_scm_env_var(sc, "*user*", "USER");
 }
 
+static char *concat(char *s1, char *s2) {
+    int len1 = strlen(s1);
+    int len2 = strlen(s2);
+    char *ret_str = (char *)calloc(len1 + len2 + 2, 1);
+    char *ptr = ret_str;
+
+    strcpy(ptr, s1);
+    ptr += len1;
+    *(ptr++) = '/';
+    strcpy(ptr, s2);
+    return ret_str;
+}
+
+static void clean_on_exit(void ) {
+    if (s7_libs != NULL) {
+        free(s7_libs);
+        s7_libs = NULL;
+    }
+    if (s7_home != NULL) {
+        free(s7_home);
+        s7_home = NULL;
+    }
+}
+static void manage_directories(s7_scheme *sc, char *argv0) {
+    progname = basename(argv0);
+    s7_home = dirname(argv0);
+    char *start_dir = NULL;
+    fprintf(stdout, "s7_home  : <%s> (DEBUG)\n", s7_home);
+    switch (*s7_home) {
+        case '.':
+            // current dir or upper (..)
+            if (*(s7_home + 1) == '.') {
+                start_dir = concat(strdup(dirname(getcwd(NULL, 0))), s7_home + 2);
+            } else {
+                start_dir = concat(strdup(getcwd(NULL, 0)), s7_home + 1);
+            }
+            break;
+        case '/':
+            // absolute dir, nothing to do
+            start_dir = strdup(s7_home);
+            break;
+        default:
+            // relative dir
+            start_dir = concat(getcwd(NULL, 0), s7_home);
+            break;
+    }
+    s7_home = start_dir;
+    s7_libs = concat(s7_home, "libs");
+    fprintf(stdout, "progname : <%s>\n", progname);
+    fprintf(stdout, "s7_home  : <%s>\n", s7_home);
+    fprintf(stdout, "s7_libs  : <%s>\n", s7_libs);
+    fprintf(stdout, "start_dir: <%s>\n", start_dir);
+    atexit(clean_on_exit);
+    add_lib_dir(sc, s7_home);
+    add_lib_dir(sc, s7_libs);
+    load_scm(sc, concat(s7_libs, "basic-lib.scm"));
+}
+
 int main(int argc, char **argv) {
     int ret_value = SUCCESS;
     int i;
     s7_scheme *sc;
     sc = s7_init();
 
-    progname = basename(argv[0]);
-    s7_home = dirname(argv[0]);
+    manage_directories(sc, argv[0]);
     fprintf(stderr, "s7_home: <%s>\n", s7_home);
     for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
         char *current_arg = argv[i] + 1;
