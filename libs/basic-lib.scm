@@ -46,6 +46,7 @@
 ;; using full-provide
 (full-provide 'basic-lib.scm)
 
+#|
 ;; debugging full-provide
 (when (and (not *quiet*) (not (defined? 'pretty-print)))
   (load "write.scm"))
@@ -62,3 +63,6 @@
     (format #t "~%")
     (pretty-print (macroexpand (full-provide 'basic-lib.scm)))
     (format #t "~%~%")))
+|#
+(display "basic-lib.scm loaded!!!")
+(newline)
