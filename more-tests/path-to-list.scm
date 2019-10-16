@@ -2,8 +2,11 @@
 ;; path-to-list.scm
 ;;
 
+(require cload.scm)
 (provide 'path-to-list.scm)
 
+(when (not *quiet*)
+  (format #t "path-to-list.scm is loading...~%"))
 (define-constant *HASH-TABLE-SIZE* 8192)
 
 (define (path-to-list path)
@@ -50,3 +53,5 @@
   (set! *path-hash* (fill-path-hash *path*)))
 
 (init-path (getenv "PATH"))
+(when (not *quiet*)
+  (format #t "path-to-list.scm loaded~%"))
