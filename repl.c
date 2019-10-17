@@ -212,7 +212,7 @@ static void manage_directories(s7_scheme *sc, char *argv0) {
     progname = basename(argv0);
     s7_home = dirname(argv0);
     char *start_dir = NULL;
-    fprintf(stdout, "s7_home  : <%s> (DEBUG)\n", s7_home);
+    // fprintf(stdout, "s7_home  : <%s> (DEBUG)\n", s7_home);
     switch (*s7_home) {
         case '.':
             // current dir or upper (..)
@@ -233,14 +233,13 @@ static void manage_directories(s7_scheme *sc, char *argv0) {
     }
     s7_home = start_dir;
     s7_libs = concat(s7_home, "libs");
+    atexit(clean_on_exit);
+    /*
     fprintf(stdout, "progname : <%s>\n", progname);
     fprintf(stdout, "s7_home  : <%s>\n", s7_home);
     fprintf(stdout, "s7_libs  : <%s>\n", s7_libs);
     fprintf(stdout, "start_dir: <%s>\n", start_dir);
-    atexit(clean_on_exit);
-    add_lib_dir(sc, s7_home);
-    add_lib_dir(sc, s7_libs);
-    load_scm(sc, concat(s7_libs, "basic-lib.scm"));
+    */
 }
 
 int main(int argc, char **argv) {
@@ -250,7 +249,7 @@ int main(int argc, char **argv) {
     sc = s7_init();
 
     manage_directories(sc, argv[0]);
-    fprintf(stderr, "s7_home: <%s>\n", s7_home);
+    // fprintf(stderr, "s7_home: <%s>\n", s7_home);
     for (i=1; i<argc && *(argv[i]) == '-' && ret_value==SUCCESS; i++) {
         char *current_arg = argv[i] + 1;
         while (*current_arg != 0) {
@@ -290,6 +289,9 @@ int main(int argc, char **argv) {
             current_arg++;
         }
     }
+    add_lib_dir(sc, s7_home);
+    add_lib_dir(sc, s7_libs);
+    load_scm(sc, concat(s7_libs, "basic-lib.scm"));
     set_scm_configuration(sc);
     set_scm_environment(sc);
     if (ret_value == SUCCESS) {
