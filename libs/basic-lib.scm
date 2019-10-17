@@ -64,5 +64,5 @@
     (pretty-print (macroexpand (full-provide 'basic-lib.scm)))
     (format #t "~%~%")))
 |#
-(display "basic-lib.scm loaded!!!")
-(newline)
+;; (display "basic-lib.scm loaded!!!")
+;; (newline)
