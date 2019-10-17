@@ -2,7 +2,7 @@
 ;; fact.scm
 ;;
 
-(full-provide 'fact.scm)
+(xt-provide 'fact.scm)
 
 (define (fact0 N)
   (define (inner-fact acc k)

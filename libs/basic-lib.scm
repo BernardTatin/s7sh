@@ -20,11 +20,11 @@
 (define quit (lambda() (exit)))
 
 ;;
-;; full-provide sym (a symbol)
+;; xt-provide sym (a symbol)
 ;; add sym to *features,
 ;; add the directory of the current file to *load-path*
 ;; TODO: errors management!
-(define-macro (full-provide sym)
+(define-macro (xt-provide sym)
               `(let ((provide-sym (lambda()
                                     (when (not (in-features? ,sym))
                                       (with-let (rootlet)
@@ -43,11 +43,11 @@
                      (provide-sym)
                      (set! *load-path* (cons directory *load-path*))))))
 
-;; using full-provide
-(full-provide 'basic-lib.scm)
+;; using xt-provide
+(xt-provide 'basic-lib.scm)
 
 #|
-;; debugging full-provide
+;; debugging xt-provide
 (when (and (not *quiet*) (not (defined? 'pretty-print)))
   (load "write.scm"))
 
@@ -61,7 +61,7 @@
     (show-list "*features*" *features*)
     (show-list "*load-path*:" *load-path*)
     (format #t "~%")
-    (pretty-print (macroexpand (full-provide 'basic-lib.scm)))
+    (pretty-print (macroexpand (xt-provide 'basic-lib.scm)))
     (format #t "~%~%")))
 |#
 (display "basic-lib.scm loaded!!!")
