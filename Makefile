@@ -37,7 +37,7 @@ OFLAGS = -O2 -pthread
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = gcc
-LFLAGS = -L/usr/gnu/lib -ldl -lm -lintl -lpthread -flinker-output=dyn
+LFLAGS = -L/usr/gnu/lib -ldl -lm -lpthread -Wl,-export-dynamic
 endif
 
 all: $(_odir) $(_exe)
