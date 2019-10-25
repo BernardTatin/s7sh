@@ -4,8 +4,6 @@
 
 SOURCES = s7.c repl.c
 
-_exe = repl-s7
-
 _lobjs = $(patsubst %.c,%.o,$(notdir $(SOURCES)))
 _objs = $(addprefix $(_odir)/, $(_lobjs))
 
@@ -13,38 +11,19 @@ _deps = s7.h
 
 os = $(shell uname)
 compiler ?= gcc
-CC = $(compiler)
 _odir = $(CC)-objs
 
-ifeq ($(CC),cc)
-FLAGS = -Bdynamic -Xcc
-#-Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
-# -pedantic
-DFLAGS = -DUSE_SND=0 -DWITH_SYSTEM_EXTRAS=1
-IFLAGS = -I.
-OFLAGS = -xO2
-ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
+ifeq ($(compiler),suncc)
+	include mk/suncc.mk
+endif
+ifeq ($(compiler),clang)
+	include mk/clang.mk
+endif
+ifeq ($(compiler),gcc)
+	include mk/gcc.mk
+endif
 
-LD = cc
-LFLAGS = -Bdynamic  -ldl -lm
-# -ldl -lm -L/opt/developerstudio12.6/lib
-endif
-ifeq ($(CC),gcc)
-FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
-# -pedantic
-DFLAGS = -DUSE_SND=0 -DWITH_SYSTEM_EXTRAS=1
-IFLAGS = -I.
-OFLAGS = -O2 -pthread
-ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
-
-LD = gcc
-ifeq ($(os),SunOS)
-	LFLAGS = -L/usr/gnu/lib -ldl -lm -lintl -lpthread -flinker-output=dyn
-endif
-ifeq ($(os),Linux)
-	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
-endif
-endif
+_exe = repl-s7-$(compiler)
 
 all: $(_odir) $(_exe)
 
@@ -73,9 +52,11 @@ full-clean: clean
 	@rm -fv *.log *.o *.so
 
 test: all
+	@rm -fv libc_s7.so
 	./$(_exe)
 
 test-load: all
+	@rm -fv libc_s7.so
 	./$(_exe)  more-tests/fact.scm more-tests/show-facts.scm
 
 .PHONY: all clean install test test-load full-clean print_conf
