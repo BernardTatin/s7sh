@@ -11,6 +11,7 @@ _objs = $(addprefix $(_odir)/, $(_lobjs))
 
 _deps = s7.h
 
+os = $(shell uname)
 compiler ?= gcc
 CC = $(compiler)
 _odir = $(CC)-objs
@@ -37,13 +38,18 @@ OFLAGS = -O2 -pthread
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = gcc
-LFLAGS = -L/usr/gnu/lib -ldl -lm -lpthread -Wl,-export-dynamic
+ifeq ($(os),SunOS)
+	LFLAGS = -L/usr/gnu/lib -ldl -lm -lintl -lpthread -flinker-output=dyn
+endif
+ifeq ($(os),Linux)
+	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
+endif
 endif
 
 all: $(_odir) $(_exe)
 
 print_conf:
-	@make --version
+	@echo "os       = $(os)"
 	@echo "compiler	= $(compiler)"
 	@echo "CC		= $(CC)"
 	@echo "LD		= $(LD)
