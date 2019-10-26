@@ -8,15 +8,18 @@ CC = clang
 FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
 # -pedantic
 DFLAGS += -DHAVE_COMPLEX_NUMBERS=0
-OFLAGS = -O0 -pthread
+OFLAGS = -O0 -pthread  
+#
 ALLFLAGS = -fPIC $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = clang
 ifeq ($(os),SunOS)
-	LFLAGS = -ldl -lm -lpthread -Wl,-Bdynamic
+	LFLAGS = -lpthread -ldl -lm  -Wl,-Bdynamic
+#
 endif
 ifeq ($(os),Linux)
-	LFLAGS = -shared -ldl -lm -lpthread -Wl,-export-dynamic
+	LFLAGS = -fPIC -lpthread -ldl -lm  -Wl,-export-dynamic
+#
 endif
 
 

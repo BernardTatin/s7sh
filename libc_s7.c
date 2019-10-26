@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include <netdb.h>
 #include <sys/resource.h>
+#include <semaphore.h>
 #include <wordexp.h>
 #include "s7.h"
 
@@ -277,6 +278,57 @@ static s7_pointer s7_dl_lockf(s7_scheme *sc, s7_pointer args)
     s7_dl_lockf_2 = (int)s7_integer(s7_car(arg));
   else return(s7_wrong_type_arg_error(sc, "lockf", 3, s7_car(arg), "integer"));
   return(s7_make_integer(sc, (s7_int)lockf(s7_dl_lockf_0, s7_dl_lockf_1, s7_dl_lockf_2)));
+}
+
+
+/* -------- posix_fadvise -------- */
+static s7_pointer s7_dl_posix_fadvise(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  int s7_dl_posix_fadvise_0;
+  int s7_dl_posix_fadvise_1;
+  int s7_dl_posix_fadvise_2;
+  int s7_dl_posix_fadvise_3;
+  arg = args;
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fadvise_0 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fadvise", 1, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fadvise_1 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fadvise", 2, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fadvise_2 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fadvise", 3, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fadvise_3 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fadvise", 4, s7_car(arg), "integer"));
+  return(s7_make_integer(sc, (s7_int)posix_fadvise(s7_dl_posix_fadvise_0, s7_dl_posix_fadvise_1, s7_dl_posix_fadvise_2, s7_dl_posix_fadvise_3)));
+}
+
+
+/* -------- posix_fallocate -------- */
+static s7_pointer s7_dl_posix_fallocate(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  int s7_dl_posix_fallocate_0;
+  int s7_dl_posix_fallocate_1;
+  int s7_dl_posix_fallocate_2;
+  arg = args;
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fallocate_0 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fallocate", 1, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fallocate_1 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fallocate", 2, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_posix_fallocate_2 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "posix_fallocate", 3, s7_car(arg), "integer"));
+  return(s7_make_integer(sc, (s7_int)posix_fallocate(s7_dl_posix_fallocate_0, s7_dl_posix_fallocate_1, s7_dl_posix_fallocate_2)));
 }
 
 
@@ -923,6 +975,112 @@ static s7_pointer s7_dl_strncasecmp(s7_scheme *sc, s7_pointer args)
     s7_dl_strncasecmp_2 = (size_t)s7_integer(s7_car(arg));
   else return(s7_wrong_type_arg_error(sc, "strncasecmp", 3, s7_car(arg), "integer"));
   return(s7_make_integer(sc, (s7_int)strncasecmp(s7_dl_strncasecmp_0, s7_dl_strncasecmp_1, s7_dl_strncasecmp_2)));
+}
+
+
+/* -------- sem_init -------- */
+static s7_pointer s7_dl_sem_init(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  sem_t* s7_dl_sem_init_0;
+  int s7_dl_sem_init_1;
+  int s7_dl_sem_init_2;
+  arg = args;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sem_t*")))
+    s7_dl_sem_init_0 = (sem_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_init", 1, s7_car(arg), "sem_t*"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_sem_init_1 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_init", 2, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_sem_init_2 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_init", 3, s7_car(arg), "integer"));
+  return(s7_make_integer(sc, (s7_int)sem_init(s7_dl_sem_init_0, s7_dl_sem_init_1, s7_dl_sem_init_2)));
+}
+
+
+/* -------- sem_destroy -------- */
+static s7_pointer s7_dl_sem_destroy(s7_scheme *sc, s7_pointer arg)
+{
+  sem_t* s7_dl_sem_destroy_0;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sem_t*")))
+    s7_dl_sem_destroy_0 = (sem_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_destroy", 0, s7_car(arg), "sem_t*"));
+  return(s7_make_integer(sc, (s7_int)sem_destroy(s7_dl_sem_destroy_0)));
+}
+
+
+/* -------- sem_open -------- */
+static s7_pointer s7_dl_sem_open(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  char* s7_dl_sem_open_0;
+  int s7_dl_sem_open_1;
+  int s7_dl_sem_open_2;
+  int s7_dl_sem_open_3;
+  arg = args;
+  if (s7_is_string(s7_car(arg)))
+    s7_dl_sem_open_0 = (char*)s7_string(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_open", 1, s7_car(arg), "string"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_sem_open_1 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_open", 2, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_sem_open_2 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_open", 3, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_sem_open_3 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_open", 4, s7_car(arg), "integer"));
+  return(s7_make_c_pointer_with_type(sc, (void*)sem_open(s7_dl_sem_open_0, s7_dl_sem_open_1, s7_dl_sem_open_2, s7_dl_sem_open_3), s7_make_symbol(sc, "sem_t*"), s7_f(sc)));
+}
+
+
+/* -------- sem_close -------- */
+static s7_pointer s7_dl_sem_close(s7_scheme *sc, s7_pointer arg)
+{
+  sem_t* s7_dl_sem_close_0;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sem_t*")))
+    s7_dl_sem_close_0 = (sem_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_close", 0, s7_car(arg), "sem_t*"));
+  return(s7_make_integer(sc, (s7_int)sem_close(s7_dl_sem_close_0)));
+}
+
+
+/* -------- sem_unlink -------- */
+static s7_pointer s7_dl_sem_unlink(s7_scheme *sc, s7_pointer arg)
+{
+  char* s7_dl_sem_unlink_0;
+  if (s7_is_string(s7_car(arg)))
+    s7_dl_sem_unlink_0 = (char*)s7_string(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_unlink", 0, s7_car(arg), "string"));
+  return(s7_make_integer(sc, (s7_int)sem_unlink(s7_dl_sem_unlink_0)));
+}
+
+
+/* -------- sem_wait -------- */
+static s7_pointer s7_dl_sem_wait(s7_scheme *sc, s7_pointer arg)
+{
+  sem_t* s7_dl_sem_wait_0;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sem_t*")))
+    s7_dl_sem_wait_0 = (sem_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_wait", 0, s7_car(arg), "sem_t*"));
+  return(s7_make_integer(sc, (s7_int)sem_wait(s7_dl_sem_wait_0)));
+}
+
+
+/* -------- sem_post -------- */
+static s7_pointer s7_dl_sem_post(s7_scheme *sc, s7_pointer arg)
+{
+  sem_t* s7_dl_sem_post_0;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sem_t*")))
+    s7_dl_sem_post_0 = (sem_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sem_post", 0, s7_car(arg), "sem_t*"));
+  return(s7_make_integer(sc, (s7_int)sem_post(s7_dl_sem_post_0)));
 }
 
 
@@ -3694,6 +3852,52 @@ static s7_pointer s7_dl_setrlimit(s7_scheme *sc, s7_pointer args)
 }
 
 
+/* -------- sigwaitinfo -------- */
+static s7_pointer s7_dl_sigwaitinfo(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  sigset_t* s7_dl_sigwaitinfo_0;
+  siginfo_t* s7_dl_sigwaitinfo_1;
+  arg = args;
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "sigset_t*")))
+    s7_dl_sigwaitinfo_0 = (sigset_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sigwaitinfo", 1, s7_car(arg), "sigset_t*"));
+  arg = s7_cdr(arg);
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "siginfo_t*")))
+    s7_dl_sigwaitinfo_1 = (siginfo_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "sigwaitinfo", 2, s7_car(arg), "siginfo_t*"));
+  return(s7_make_integer(sc, (s7_int)sigwaitinfo(s7_dl_sigwaitinfo_0, s7_dl_sigwaitinfo_1)));
+}
+
+
+/* -------- waitid -------- */
+static s7_pointer s7_dl_waitid(s7_scheme *sc, s7_pointer args)
+{
+  s7_pointer arg;
+  int s7_dl_waitid_0;
+  int s7_dl_waitid_1;
+  siginfo_t* s7_dl_waitid_2;
+  int s7_dl_waitid_3;
+  arg = args;
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_waitid_0 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "waitid", 1, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_waitid_1 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "waitid", 2, s7_car(arg), "integer"));
+  arg = s7_cdr(arg);
+  if (s7_is_c_pointer_of_type(s7_car(arg), s7_make_symbol(sc, "siginfo_t*")))
+    s7_dl_waitid_2 = (siginfo_t*)s7_c_pointer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "waitid", 3, s7_car(arg), "siginfo_t*"));
+  arg = s7_cdr(arg);
+  if (s7_is_integer(s7_car(arg)))
+    s7_dl_waitid_3 = (int)s7_integer(s7_car(arg));
+  else return(s7_wrong_type_arg_error(sc, "waitid", 4, s7_car(arg), "integer"));
+  return(s7_make_integer(sc, (s7_int)waitid(s7_dl_waitid_0, s7_dl_waitid_1, s7_dl_waitid_2, s7_dl_waitid_3)));
+}
+
+
 /* -------- sethostent -------- */
 static s7_pointer s7_dl_sethostent(s7_scheme *sc, s7_pointer arg)
 {
@@ -4414,7 +4618,7 @@ void libc_s7_init(s7_scheme *sc);
 void libc_s7_init(s7_scheme *sc)
 {
   s7_pointer cur_env;
-  s7_pointer pcl_t, pl_tx, pl_ts, pl_ti, pl_txs, pcl_s, pl_sx, pl_st, pl_si, pl_sis, pl_ssi, pl_sssi, pl_ssix, pl_sisi, pcl_x, pl_xs, pcl_xi, pl_xi, pl_xt, pcl_xs, pl_xxi, pcl_xxi, pl_xis, pl_xxxi, pl_xssx, pcl_i, pl_ix, pl_it, pcl_is, pl_is, pcl_ix, pcl_iix, pcl_isi, pl_ixi, pl_isi, pl_iix, pl_isx, pcl_ixi, pl_isxi, pl_iisi, pcl_iixi, pl_iixi, pl_issi, pl_ixxi, pcl_ixsi, pl_ixiix, pl_iixiixi, pcl_di, pl_ds;
+  s7_pointer pcl_t, pl_tx, pl_ts, pl_ti, pl_txs, pcl_di, pl_ds, pcl_s, pl_sx, pl_st, pl_si, pl_sis, pl_ssi, pl_sisi, pl_sssi, pl_ssix, pcl_x, pl_xs, pcl_xi, pl_xi, pl_xt, pcl_xs, pl_xxi, pcl_xxi, pcl_xsi, pl_xis, pl_xxxi, pl_xssx, pcl_i, pl_ix, pl_it, pcl_is, pl_is, pcl_ix, pcl_iix, pcl_isi, pl_ixi, pl_isi, pcl_ixi, pl_iix, pl_isx, pl_isxi, pl_iisi, pcl_iixi, pl_iixi, pl_issi, pl_ixxi, pcl_ixsi, pl_iiixi, pl_ixiix, pl_iixiixi;
   {
     s7_pointer t, x, s, d, i;
     t = s7_t(sc);
@@ -4428,15 +4632,17 @@ void libc_s7_init(s7_scheme *sc)
     pl_ts = s7_make_signature(sc, 2, t, s);
     pl_ti = s7_make_signature(sc, 2, t, i);
     pl_txs = s7_make_signature(sc, 3, t, x, s);
+    pcl_di = s7_make_circular_signature(sc, 1, 2, d, i);
+    pl_ds = s7_make_signature(sc, 2, d, s);
     pcl_s = s7_make_circular_signature(sc, 0, 1, s);
     pl_sx = s7_make_signature(sc, 2, s, x);
     pl_st = s7_make_signature(sc, 2, s, t);
     pl_si = s7_make_signature(sc, 2, s, i);
     pl_sis = s7_make_signature(sc, 3, s, i, s);
     pl_ssi = s7_make_signature(sc, 3, s, s, i);
+    pl_sisi = s7_make_signature(sc, 4, s, i, s, i);
     pl_sssi = s7_make_signature(sc, 4, s, s, s, i);
     pl_ssix = s7_make_signature(sc, 4, s, s, i, x);
-    pl_sisi = s7_make_signature(sc, 4, s, i, s, i);
     pcl_x = s7_make_circular_signature(sc, 0, 1, x);
     pl_xs = s7_make_signature(sc, 2, x, s);
     pcl_xi = s7_make_circular_signature(sc, 1, 2, x, i);
@@ -4445,6 +4651,7 @@ void libc_s7_init(s7_scheme *sc)
     pcl_xs = s7_make_circular_signature(sc, 1, 2, x, s);
     pl_xxi = s7_make_signature(sc, 3, x, x, i);
     pcl_xxi = s7_make_circular_signature(sc, 2, 3, x, x, i);
+    pcl_xsi = s7_make_circular_signature(sc, 2, 3, x, s, i);
     pl_xis = s7_make_signature(sc, 3, x, i, s);
     pl_xxxi = s7_make_signature(sc, 4, x, x, x, i);
     pl_xssx = s7_make_signature(sc, 4, x, s, s, x);
@@ -4458,9 +4665,9 @@ void libc_s7_init(s7_scheme *sc)
     pcl_isi = s7_make_circular_signature(sc, 2, 3, i, s, i);
     pl_ixi = s7_make_signature(sc, 3, i, x, i);
     pl_isi = s7_make_signature(sc, 3, i, s, i);
+    pcl_ixi = s7_make_circular_signature(sc, 2, 3, i, x, i);
     pl_iix = s7_make_signature(sc, 3, i, i, x);
     pl_isx = s7_make_signature(sc, 3, i, s, x);
-    pcl_ixi = s7_make_circular_signature(sc, 2, 3, i, x, i);
     pl_isxi = s7_make_signature(sc, 4, i, s, x, i);
     pl_iisi = s7_make_signature(sc, 4, i, i, s, i);
     pcl_iixi = s7_make_circular_signature(sc, 3, 4, i, i, x, i);
@@ -4468,14 +4675,39 @@ void libc_s7_init(s7_scheme *sc)
     pl_issi = s7_make_signature(sc, 4, i, s, s, i);
     pl_ixxi = s7_make_signature(sc, 4, i, x, x, i);
     pcl_ixsi = s7_make_circular_signature(sc, 3, 4, i, x, s, i);
+    pl_iiixi = s7_make_signature(sc, 5, i, i, i, x, i);
     pl_ixiix = s7_make_signature(sc, 5, i, x, i, i, x);
     pl_iixiixi = s7_make_signature(sc, 7, i, i, x, i, i, x, i);
-    pcl_di = s7_make_circular_signature(sc, 1, 2, d, i);
-    pl_ds = s7_make_signature(sc, 2, d, s);
   }
 
   cur_env = s7_curlet(sc);
 
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_USERRESERVED"), s7_make_integer(sc, (s7_int)IPPORT_USERRESERVED));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_RESERVED"), s7_make_integer(sc, (s7_int)IPPORT_RESERVED));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_ROUTESERVER"), s7_make_integer(sc, (s7_int)IPPORT_ROUTESERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_WHOSERVER"), s7_make_integer(sc, (s7_int)IPPORT_WHOSERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_BIFFUDP"), s7_make_integer(sc, (s7_int)IPPORT_BIFFUDP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_EFSSERVER"), s7_make_integer(sc, (s7_int)IPPORT_EFSSERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_CMDSERVER"), s7_make_integer(sc, (s7_int)IPPORT_CMDSERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_LOGINSERVER"), s7_make_integer(sc, (s7_int)IPPORT_LOGINSERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_EXECSERVER"), s7_make_integer(sc, (s7_int)IPPORT_EXECSERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_SUPDUP"), s7_make_integer(sc, (s7_int)IPPORT_SUPDUP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_TTYLINK"), s7_make_integer(sc, (s7_int)IPPORT_TTYLINK));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_FINGER"), s7_make_integer(sc, (s7_int)IPPORT_FINGER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_RJE"), s7_make_integer(sc, (s7_int)IPPORT_RJE));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_TFTP"), s7_make_integer(sc, (s7_int)IPPORT_TFTP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_MTP"), s7_make_integer(sc, (s7_int)IPPORT_MTP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_WHOIS"), s7_make_integer(sc, (s7_int)IPPORT_WHOIS));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_NAMESERVER"), s7_make_integer(sc, (s7_int)IPPORT_NAMESERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_TIMESERVER"), s7_make_integer(sc, (s7_int)IPPORT_TIMESERVER));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_SMTP"), s7_make_integer(sc, (s7_int)IPPORT_SMTP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_TELNET"), s7_make_integer(sc, (s7_int)IPPORT_TELNET));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_FTP"), s7_make_integer(sc, (s7_int)IPPORT_FTP));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_NETSTAT"), s7_make_integer(sc, (s7_int)IPPORT_NETSTAT));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_DAYTIME"), s7_make_integer(sc, (s7_int)IPPORT_DAYTIME));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_SYSTAT"), s7_make_integer(sc, (s7_int)IPPORT_SYSTAT));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_DISCARD"), s7_make_integer(sc, (s7_int)IPPORT_DISCARD));
+  s7_define(sc, cur_env, s7_make_symbol(sc, "IPPORT_ECHO"), s7_make_integer(sc, (s7_int)IPPORT_ECHO));
   s7_define(sc, cur_env, s7_make_symbol(sc, "SIG_IGN"), s7_make_c_pointer_with_type(sc, (void*)SIG_IGN, s7_make_symbol(sc, "void*"), s7_f(sc)));
   s7_define(sc, cur_env, s7_make_symbol(sc, "SIG_DFL"), s7_make_c_pointer_with_type(sc, (void*)SIG_DFL, s7_make_symbol(sc, "void*"), s7_f(sc)));
   s7_define(sc, cur_env, s7_make_symbol(sc, "SIG_ERR"), s7_make_c_pointer_with_type(sc, (void*)SIG_ERR, s7_make_symbol(sc, "void*"), s7_f(sc)));
@@ -7588,6 +7820,14 @@ void libc_s7_init(s7_scheme *sc)
             s7_make_typed_function(sc, "sethostent", s7_dl_sethostent, 1, 0, false, "void sethostent(int)", pl_ti));
 
   s7_define(sc, cur_env,
+            s7_make_symbol(sc, "waitid"),
+            s7_make_typed_function(sc, "waitid", s7_dl_waitid, 4, 0, false, "int waitid(int int siginfo_t* int)", pl_iiixi));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sigwaitinfo"),
+            s7_make_typed_function(sc, "sigwaitinfo", s7_dl_sigwaitinfo, 2, 0, false, "int sigwaitinfo(sigset_t* siginfo_t*)", pcl_ix));
+
+  s7_define(sc, cur_env,
             s7_make_symbol(sc, "setrlimit"),
             s7_make_typed_function(sc, "setrlimit", s7_dl_setrlimit, 2, 0, false, "int setrlimit(int void*)", pl_iix));
 
@@ -7612,6 +7852,10 @@ void libc_s7_init(s7_scheme *sc)
             s7_make_typed_function(sc, "sigaction", g_sigaction, 3, 0, false, "sigaction", NULL));
 
   s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sigwait"),
+            s7_make_typed_function(sc, "sigwait", g_sigwait, 1, 0, false, "sigwait", NULL));
+
+  s7_define(sc, cur_env,
             s7_make_symbol(sc, "sigqueue"),
             s7_make_typed_function(sc, "sigqueue", g_sigqueue, 3, 0, false, "sigqueue", NULL));
 
@@ -7622,6 +7866,30 @@ void libc_s7_init(s7_scheme *sc)
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "wait"),
             s7_make_typed_function(sc, "wait", g_wait, 0, 0, false, "wait", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WIFSTOPPED"),
+            s7_make_typed_function(sc, "WIFSTOPPED", g_WIFSTOPPED, 1, 0, false, "WIFSTOPPED", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WIFSIGNALED"),
+            s7_make_typed_function(sc, "WIFSIGNALED", g_WIFSIGNALED, 1, 0, false, "WIFSIGNALED", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WIFEXITED"),
+            s7_make_typed_function(sc, "WIFEXITED", g_WIFEXITED, 1, 0, false, "WIFEXITED", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WSTOPSIG"),
+            s7_make_typed_function(sc, "WSTOPSIG", g_WSTOPSIG, 1, 0, false, "WSTOPSIG", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WTERMSIG"),
+            s7_make_typed_function(sc, "WTERMSIG", g_WTERMSIG, 1, 0, false, "WTERMSIG", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "WEXITSTATUS"),
+            s7_make_typed_function(sc, "WEXITSTATUS", g_WEXITSTATUS, 1, 0, false, "WEXITSTATUS", NULL));
 
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "sigaction.set_sa_flags"),
@@ -7658,6 +7926,74 @@ void libc_s7_init(s7_scheme *sc)
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "timespec.make"),
             s7_make_typed_function(sc, "timespec.make", g_timespec_make, 0, 0, false, "timespec.make", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_addr"),
+            s7_make_typed_function(sc, "siginfo.si_addr", g_siginfo_si_addr, 1, 0, false, "siginfo.si_addr", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_ptr"),
+            s7_make_typed_function(sc, "siginfo.si_ptr", g_siginfo_si_ptr, 1, 0, false, "siginfo.si_ptr", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_fd"),
+            s7_make_typed_function(sc, "siginfo.si_fd", g_siginfo_si_fd, 1, 0, false, "siginfo.si_fd", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_band"),
+            s7_make_typed_function(sc, "siginfo.si_band", g_siginfo_si_band, 1, 0, false, "siginfo.si_band", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_timerid"),
+            s7_make_typed_function(sc, "siginfo.si_timerid", g_siginfo_si_timerid, 1, 0, false, "siginfo.si_timerid", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_overrun"),
+            s7_make_typed_function(sc, "siginfo.si_overrun", g_siginfo_si_overrun, 1, 0, false, "siginfo.si_overrun", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_int"),
+            s7_make_typed_function(sc, "siginfo.si_int", g_siginfo_si_int, 1, 0, false, "siginfo.si_int", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_value"),
+            s7_make_typed_function(sc, "siginfo.si_value", g_siginfo_si_value, 1, 0, false, "siginfo.si_value", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_stime"),
+            s7_make_typed_function(sc, "siginfo.si_stime", g_siginfo_si_stime, 1, 0, false, "siginfo.si_stime", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_utime"),
+            s7_make_typed_function(sc, "siginfo.si_utime", g_siginfo_si_utime, 1, 0, false, "siginfo.si_utime", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_status"),
+            s7_make_typed_function(sc, "siginfo.si_status", g_siginfo_si_status, 1, 0, false, "siginfo.si_status", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_uid"),
+            s7_make_typed_function(sc, "siginfo.si_uid", g_siginfo_si_uid, 1, 0, false, "siginfo.si_uid", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_pid"),
+            s7_make_typed_function(sc, "siginfo.si_pid", g_siginfo_si_pid, 1, 0, false, "siginfo.si_pid", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_code"),
+            s7_make_typed_function(sc, "siginfo.si_code", g_siginfo_si_code, 1, 0, false, "siginfo.si_code", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_errno"),
+            s7_make_typed_function(sc, "siginfo.si_errno", g_siginfo_si_errno, 1, 0, false, "siginfo.si_errno", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.si_signo"),
+            s7_make_typed_function(sc, "siginfo.si_signo", g_siginfo_si_signo, 1, 0, false, "siginfo.si_signo", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "siginfo.make"),
+            s7_make_typed_function(sc, "siginfo.make", g_siginfo_make, 0, 0, false, "siginfo.make", NULL));
 
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "rusage.ru_stime"),
@@ -7938,6 +8274,10 @@ void libc_s7_init(s7_scheme *sc)
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "clock_nanosleep"),
             s7_make_typed_function(sc, "clock_nanosleep", g_clock_nanosleep, 4, 0, false, "clock_nanosleep", NULL));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "clock_getcpuclockid"),
+            s7_make_typed_function(sc, "clock_getcpuclockid", g_clock_getcpuclockid, 1, 0, false, "clock_getcpuclockid", NULL));
 
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "clock_settime"),
@@ -8620,6 +8960,34 @@ void libc_s7_init(s7_scheme *sc)
             s7_make_typed_function(sc, "remove", s7_dl_remove, 1, 0, false, "int remove(char*)", pl_is));
 
   s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_post"),
+            s7_make_typed_function(sc, "sem_post", s7_dl_sem_post, 1, 0, false, "int sem_post(sem_t*)", pl_ix));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_wait"),
+            s7_make_typed_function(sc, "sem_wait", s7_dl_sem_wait, 1, 0, false, "int sem_wait(sem_t*)", pl_ix));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_unlink"),
+            s7_make_typed_function(sc, "sem_unlink", s7_dl_sem_unlink, 1, 0, false, "int sem_unlink(char*)", pl_is));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_close"),
+            s7_make_typed_function(sc, "sem_close", s7_dl_sem_close, 1, 0, false, "int sem_close(sem_t*)", pl_ix));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_open"),
+            s7_make_typed_function(sc, "sem_open", s7_dl_sem_open, 4, 0, false, "sem_t* sem_open(char* int int int)", pcl_xsi));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_destroy"),
+            s7_make_typed_function(sc, "sem_destroy", s7_dl_sem_destroy, 1, 0, false, "int sem_destroy(sem_t*)", pl_ix));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "sem_init"),
+            s7_make_typed_function(sc, "sem_init", s7_dl_sem_init, 3, 0, false, "int sem_init(sem_t* int int)", pcl_ixi));
+
+  s7_define(sc, cur_env,
             s7_make_symbol(sc, "strncasecmp"),
             s7_make_typed_function(sc, "strncasecmp", s7_dl_strncasecmp, 3, 0, false, "int strncasecmp(char* char* size_t)", pl_issi));
 
@@ -8770,6 +9138,14 @@ void libc_s7_init(s7_scheme *sc)
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "feclearexcept"),
             s7_make_typed_function(sc, "feclearexcept", s7_dl_feclearexcept, 1, 0, false, "int feclearexcept(int)", pcl_i));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "posix_fallocate"),
+            s7_make_typed_function(sc, "posix_fallocate", s7_dl_posix_fallocate, 3, 0, false, "int posix_fallocate(int int int)", pcl_i));
+
+  s7_define(sc, cur_env,
+            s7_make_symbol(sc, "posix_fadvise"),
+            s7_make_typed_function(sc, "posix_fadvise", s7_dl_posix_fadvise, 4, 0, false, "int posix_fadvise(int int int int)", pcl_i));
 
   s7_define(sc, cur_env,
             s7_make_symbol(sc, "lockf"),
