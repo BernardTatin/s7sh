@@ -1,9 +1,11 @@
 # s7
 repl
 repl-s7
+repl-s7-*
 temp-s7-output-*.c
 
 # object files
+core
 *.o
 *.so
 *.a
