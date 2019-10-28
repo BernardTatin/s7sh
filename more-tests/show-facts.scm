@@ -2,7 +2,8 @@
 ;; show-facts.scm
 ;;
 
-(require fact.scm)
+;; (require fact.scm)
+(load "more-tests/fact.scm")
 
 (define (show-facts N)
   (format #t "~2D! = ~D~%" N (fact N))
