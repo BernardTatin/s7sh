@@ -2,6 +2,14 @@
 
 I took the _[s7](https://ccrma.stanford.edu/software/snd/snd/s7.html)_ code because I love the presentation page (light style, good content) and the binding of C language. It is in the hope to write my shell (as _bash_, _zsh_, ...) with the _[Scheme](https://schemers.org/)_ language. It is an early version *which can break the original code*.
 
+## compatibility
+
+| OS       	 	| gcc  | clang   | Sun cc  |
+| :------------- 	| ---: | ------: | ------: |
+|  **Linux**	 	| OK   | OK      | Todo	   |
+|  **Solaris 11.4**  	| OK   | OK      | OK	   |
+|  **NetBSD 8**		| NO   | OK      | N/A     |
+
 ## first steps: `REPL`
 
 The big work is a `REPL` version with a full configuration thanks to files or command line options. Because I am not _Windows friendly_, all the work is done on _Linux_ and (later) _BSD_ systems. Here is what is working.
