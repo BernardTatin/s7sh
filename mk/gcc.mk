@@ -17,4 +17,7 @@ endif
 ifeq ($(os),Linux)
 	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
 endif
+ifeq ($(os),NetBSD)
+	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
+endif
 

@@ -3,6 +3,7 @@ repl
 repl-s7
 repl-s7-*
 temp-s7-output-*.c
+libc_s7.c
 
 # object files
 core

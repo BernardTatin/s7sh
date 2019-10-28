@@ -20,5 +20,10 @@ endif
 ifeq ($(os),Linux)
 	LFLAGS = -fPIC $(COMMON_LIBS) -Wl,-export-dynamic
 endif
+ifeq ($(os),NetBSD)
+	LFLAGS = -fPIC -lpthread -lm  -Wl,-export-dynamic
+#	LFLAGS = -fPIC -lpthread -ldl -lm  -Wl,-export-dynamic
+#
+endif
 
 
