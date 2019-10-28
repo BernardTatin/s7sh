@@ -11,19 +11,15 @@ OFLAGS = -O0 -pthread
 
 ALLFLAGS = -fPIC $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
+ifeq ($(os),NetBSD)
+COMMON_LIBS = -lpthread -lm
+else
 COMMON_LIBS = -lpthread -ldl -lm
+endif
 
 LD = clang
 ifeq ($(os),SunOS)
-	LFLAGS = $(COMMON_LIBS) -Wl,-Bdynamic
-endif
-ifeq ($(os),Linux)
+	LFLAGS = -fPIC $(COMMON_LIBS) -Wl,-Bdynamic
+else
 	LFLAGS = -fPIC $(COMMON_LIBS) -Wl,-export-dynamic
 endif
-ifeq ($(os),NetBSD)
-	LFLAGS = -fPIC -lpthread -lm  -Wl,-export-dynamic
-#	LFLAGS = -fPIC -lpthread -ldl -lm  -Wl,-export-dynamic
-#
-endif
-
-
