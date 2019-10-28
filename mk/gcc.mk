@@ -7,7 +7,7 @@ include mk/common-cc.mk
 CC = gcc
 FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
 # -pedantic
-OFLAGS = -O2 -pthread
+OFLAGS = -O0 -pthread
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = gcc
@@ -18,6 +18,6 @@ ifeq ($(os),Linux)
 	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
 endif
 ifeq ($(os),NetBSD)
-	LFLAGS = -ldl -lm -lpthread -Wl,-export-dynamic
+	LFLAGS = -lm -lpthread -Wl,-export-dynamic
 endif
 

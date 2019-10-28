@@ -8,7 +8,9 @@ I took the _[s7](https://ccrma.stanford.edu/software/snd/snd/s7.html)_ code beca
 | :------------- 	| ---: | ------: | ------: |
 |  **Linux**	 	| OK   | OK      | Todo	   |
 |  **Solaris 11.4**  	| OK   | OK      | OK	   |
-|  **NetBSD 8**		| NO   | OK      | N/A     |
+|  **NetBSD 8**		| OK   | OK      | N/A     |
+
+***Notes*** _NetBSD_ needs some work on `libc.scm`.
 
 ## first steps: `REPL`
 
