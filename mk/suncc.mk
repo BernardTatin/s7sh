@@ -8,7 +8,7 @@ CC = cc
 FLAGS = -Bdynamic -Xcc -m64
 #-Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
 # -pedantic
-OFLAGS = -xO2
+OFLAGS = -xO$(optim)
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = cc

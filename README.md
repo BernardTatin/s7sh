@@ -12,19 +12,33 @@ I took the _[s7](https://ccrma.stanford.edu/software/snd/snd/s7.html)_ code beca
 
 ***Notes*** _NetBSD_ needs some work on `libc.scm`.
 
+## compilation
+
+
 ## first steps: `REPL`
 
 The big work is a `REPL` version with a full configuration thanks to files or command line options. Because I am not _Windows friendly_, all the work is done on _Linux_ and (later) _BSD_ systems. Here is what is working.
 
 ### compilation
 
-There is a `Makefile` for the _GNU_ version of  `make` (`gmake` on _BSD_ systems).  The targets are the following:
+Just do:
+
+```
+$ make [compiler=gcc|clang|suncc] [optim=0|1|2|3] clean all
+```
+
+This is a `Makefile` for the _GNU_ version of  `make` (`gmake` on _BSD_ systems).  The targets are the following:
 
 - `all`: compile `repl-s7`,
 - `clean`: delete all the compilation products,
 - `install`: install all that stuff in `/usr/local` (or elsewhere after editing the `PREFIX` variable), not implemented today,
 - `full-clean`: call the `clean` target and remove all object files and dynamic libraries created by running `repl-s7`,
 - `test` and `test-load` are deprecated tests.
+
+Default values are:
+
+- `compiler`: `gcc`,
+- `optim`: 0, use 3 at your own risks
 
 ### configuration file(s)
 

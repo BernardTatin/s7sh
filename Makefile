@@ -9,8 +9,11 @@ _objs = $(addprefix $(_odir)/, $(_lobjs))
 
 _deps = s7.h
 
+
 os = $(shell uname)
 compiler ?= gcc
+optim ?= 0
+
 _odir = $(CC)-objs
 
 ifeq ($(compiler),suncc)

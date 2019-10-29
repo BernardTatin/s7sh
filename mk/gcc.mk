@@ -7,7 +7,7 @@ include mk/common-cc.mk
 CC = gcc
 FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-implicit-fallthrough
 # -pedantic
-OFLAGS = -O0 -pthread
+OFLAGS = -O$(optim) -pthread
 ALLFLAGS = $(FLAGS) $(DFLAGS) $(IFLAGS) $(OFLAGS)
 
 LD = gcc

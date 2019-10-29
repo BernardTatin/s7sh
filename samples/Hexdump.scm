@@ -49,10 +49,11 @@
 ;; transformation d'un caractere en sa valeur hexa
 ;; le retour est une chaine de caractere, pour l'affichage
 (define (char->hex char)
-  (let ((n (char->integer char) ))
+  (let* ((n (char->integer char))
+         (hex-n (number-hexstr n)))
     (if (< n 16)
-        (string-append "0" (number-hexstr n) )
-        (number-hexstr n))))
+        (string-append "0" hex-n)
+        hex-n)))
 ;;------------------------------------------------------
 ;; reset des variables de fonctionnement du dump
 (define (loc-hex-reset)
@@ -131,9 +132,10 @@
           (hexdump filename)
           (lhexdump (cdr l))))))
 ;;================================================================
-;; pour guile : command-line est une fonction renvoyant la liste de 
+;; pour guile : command-line est une fonction renvoyant la liste de
 ;; -- le ligne de commande.
 ;; dans ces conditions, la ligne suivante fonctionne BIEN
 ;; (lhexdump (command-line))
+;; testing with s7
 (hexdump "samples/hexdump.ss")
 ;;================================================================
