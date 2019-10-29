@@ -29,7 +29,7 @@
                (do ((char (read-char flux) (read-char flux)))
                  ((eof-object? char))
                  (OnNewChar char)))))
-    (begin 
+    (begin
       (OnBegin filename)
       (call-with-input-file filename FileLoop)
       (OnEnd filename))))
@@ -76,7 +76,7 @@
                (do ((char (read-char flux) (read-char flux)))
                  ((eof-object? char))
                  (locOnNewChar char)))))
-    (begin 
+    (begin
       (set! sfaState 'sfaNone)
       (OnBegin filename)
       (call-with-input-file filename FileLoop)

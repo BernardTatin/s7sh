@@ -28,14 +28,14 @@
 (define (zpad str len)
   (let ((l (string-length str) ))
     (if (< l len)
-        (string-append (make-string (- len l) #\0) str) 
+        (string-append (make-string (- len l) #\0) str)
         str)))
 ;;------------------------------------------------------
 ;; Variables du systeme
-;; 
+;;
 (define *hex-col* 0)      ;; numero de colone en cours (de 0 a 15)
 (define *hex-ascii* "")   ;; l'ascii
-(define *hex-hex* "")     ;; l'hexa 
+(define *hex-hex* "")     ;; l'hexa
 (define *hex-adr* 0)      ;; l'adresse
 ;;------------------------------------------------------
 ;; transforme un nombre en chaine ASCII / HEXA
@@ -51,7 +51,7 @@
 (define (char->hex char)
   (let ((n (char->integer char) ))
     (if (< n 16)
-        (string-append "0" (number-hexstr n) )   
+        (string-append "0" (number-hexstr n) )
         (number-hexstr n))))
 ;;------------------------------------------------------
 ;; reset des variables de fonctionnement du dump
@@ -109,7 +109,7 @@
                ((char>? c (integer->char 127)) ".")
                (else (make-string 1 c)))))) ; fin du let
 
-    (begin 
+    (begin
       (set! *hex-ascii* (string-append *hex-ascii* (get-good-ascii char)))
       (set! *hex-hex* (string-append *hex-hex* (char->hex char) " "))
       (set! *hex-col* (+ *hex-col* 1))
