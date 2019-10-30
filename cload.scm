@@ -103,6 +103,8 @@
 ;;;         (* 1024 mem)))))
 ;;; --------------------------------------------------------------------------------
 
+(define (m-system command)
+  ())
 (define *cload-cflags* (if (provided? 'clang) "-fPIC" ""))
 (define *cload-ldflags* "")
 (if (not (defined? '*cload-directory*))
