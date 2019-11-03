@@ -15,29 +15,29 @@
 ;;;       Each description has the form: (return-type entity-name-in-C (argument-type...))
 ;;;       where each entry is a symbol, and C names are used throughout.  So, in the j0
 ;;;       example above, (double j0 (double)) says we want access to j0, it returns
-;;;       a C double, and takes one argument, also a C double.  s7 tries to figure out 
+;;;       a C double, and takes one argument, also a C double.  s7 tries to figure out
 ;;;       what the corresponding s7 type is, but in tricky cases, you should tell it
 ;;;       by replacing the bare type name with a list: (C-type underlying-C-type).  For example,
 ;;;       the Snd function set_graph_style takes an (enum) argument of type graph_style_t.
 ;;;       This is actually an int, so we use (graph_style_t int) as the type:
 ;;;         (void set_graph_style ((graph_style_t int)))
 ;;;       If the C entity is a constant, then the descriptor list has just two entries,
-;;;       the C-type and the entity name: (int F_OK) for example. The entity name can also be a list 
+;;;       the C-type and the entity name: (int F_OK) for example. The entity name can also be a list
 ;;;       (an enum listing for example).
-;;;       If the C type has a space ("struct tm*" for example), use (symbol "struct tm*") 
+;;;       If the C type has a space ("struct tm*" for example), use (symbol "struct tm*")
 ;;;       to construct the corresponding symbol.
 ;;;    The entity is placed in the current s7 environment under the name (string-append prefix ":" name)
 ;;;    where the ":" is omitted if the prefix is null.  So in the j0 example, we get in s7 the function m:j0.
 ;;;
 ;;; some examples:
 ;;;
-;;;  (c-define '((double j0 (double)) 
-;;;              (double j1 (double)) 
-;;;              (double erf (double)) 
+;;;  (c-define '((double j0 (double))
+;;;              (double j1 (double))
+;;;              (double erf (double))
 ;;;              (double erfc (double))
 ;;;              (double lgamma (double)))
 ;;;             "m" "math.h")
-;;; 
+;;;
 ;;;
 ;;; (c-define '(char* getenv (char*)))
 ;;; (c-define '(int setenv (char* char* int)))
@@ -53,16 +53,16 @@
 ;;;
 ;;;   (c-define '(snd_info* any_selected_sound ()) "" "snd.h" "-I.")
 ;;;   (c-define '(void select_channel (snd_info* int)) "" "snd.h" "-I.")
-;;;   (c-define '(((graph_style_t int) (GRAPH_LINES GRAPH_DOTS GRAPH_FILLED GRAPH_DOTS_AND_LINES GRAPH_LOLLIPOPS)) 
-;;;               (void set_graph_style ((graph_style_t int)))) 
+;;;   (c-define '(((graph_style_t int) (GRAPH_LINES GRAPH_DOTS GRAPH_FILLED GRAPH_DOTS_AND_LINES GRAPH_LOLLIPOPS))
+;;;               (void set_graph_style ((graph_style_t int))))
 ;;;             "" "snd.h" "-I.")
-;;;   
+;;;
 ;;;
 ;;;  (c-define '(char* getcwd (char* size_t)) "" "unistd.h")
 ;;;    :(let ((str (make-string 32))) (getcwd str 32) str)
 ;;;    "/home/bil/cl\x00                   "
 ;;;    so it works in a sense -- there is a memory leak here
-;;; 
+;;;
 ;;;
 ;;; (c-define (list '(void* calloc (size_t size_t))
 ;;;		    '(void* malloc (size_t))
@@ -87,7 +87,7 @@
 ;;;                     }")
 ;;; 	        (char* read_dir (DIR*)))
 ;;;   "" '("sys/types.h" "dirent.h"))
-;;; 
+;;;
 ;;; (let ((dir (opendir "/home/bil/gtk-snd")))
 ;;;   (do ((p (read_dir dir) (read_dir dir)))
 ;;;       ((= (length p) 0))
@@ -96,10 +96,10 @@
 ;;;
 ;;; (define (memory-usage)
 ;;;   (with-let *libc*
-;;;     (let ((v (rusage.make))) 
+;;;     (let ((v (rusage.make)))
 ;;;       (getrusage RUSAGE_SELF v)
-;;;       (let ((mem (rusage.ru_maxrss v))) 
-;;;         (free v) 
+;;;       (let ((mem (rusage.ru_maxrss v)))
+;;;         (free v)
 ;;;         (* 1024 mem)))))
 ;;; --------------------------------------------------------------------------------
 
@@ -113,15 +113,15 @@
 (define *cload-c-compiler* (if (provided? 'gcc) "gcc" (if (provided? 'clang) "clang" "cc")))
 
 
-(define-macro (defvar name value) 
-  `(if (not (defined? ',name)) 
+(define-macro (defvar name value)
+  `(if (not (defined? ',name))
        (define ,name ,value)))
 
 (defvar c-define-output-file-counter 0)   ; ugly, but I can't find a way around this (dlopen/dlsym stupidity)
 
 
 ;;; to place the new function in the caller's current environment, we need to pass the environment in explicitly:
-(define-macro (c-define . args) 
+(define-macro (c-define . args)
   (cons 'c-define-1 (cons '(curlet) args)))
 
 
@@ -154,7 +154,7 @@
 
 		((string=? "s7_pointer" type-name)
 		 's7_pointer)
-		
+
 		((string-position "char*" type-name)  ; but not char** (caught above)
 		 'string)
 
@@ -162,22 +162,22 @@
 		     (string-position "pointer" type-name))
 		 'c_pointer)
 
-		((assoc type-name '(("char" . character) 
+		((assoc type-name '(("char" . character)
 				    ("bool" . boolean)) string-position)
 		 => cdr)
-		
+
 		;; ((string-position "complex" type-name)
 		;;  'complex)                              ; double complex or complex double (mus_edot_product in clm.c uses the latter)
 
-		((or (string-position "float" type-name) 
-		     (string-position "double" type-name)) 
+		((or (string-position "float" type-name)
+		     (string-position "double" type-name))
 		 'real)
 
-		((or (string-position "int" type-name) 
+		((or (string-position "int" type-name)
 		     (string-position "long" type-name) ; assuming not "long double" here so we need to look for it first (above)
-		     (string-position "short" type-name) 
+		     (string-position "short" type-name)
 		     (string-position "size" type-name)
-		     (string-position "byte" type-name)) 
+		     (string-position "byte" type-name))
 		 'integer)
 
 		(#t #t)))))
@@ -187,10 +187,10 @@
 
   (define (C->s7-cast type)
     (find-handler type (lambda (p) (list-ref p 4))))
-    
+
   (define (C->s7 type)
     (find-handler type cadddr))
-    
+
   (define (s7->C type)
     (find-handler type caddr))
 
@@ -210,7 +210,7 @@
 
   (set! c-define-output-file-counter (+ c-define-output-file-counter 1))
 
-  (let ((file-name (string-append *cload-directory* 
+  (let ((file-name (string-append *cload-directory*
 				  (if (and (> (length *cload-directory*) 0)
 					   (not (char=? (string-ref *cload-directory* (- (length *cload-directory*) 1)) #\/)))
 				      "/" "")
@@ -228,12 +228,12 @@
 	  (p #f)
 	  (int-funcs ())  ; functions guaranteed to return int
 	  (double-funcs ())  ; functions returning double
-	  (sig-symbols (list (cons 'integer? 0) (cons 'boolean? 0) (cons 'real?  0) (cons 'float? 0) 
+	  (sig-symbols (list (cons 'integer? 0) (cons 'boolean? 0) (cons 'real?  0) (cons 'float? 0)
 			     (cons 'char? 0) (cons 'string? 0) (cons 'c-pointer? 0) (cons 't 0)))
 	  (signatures (make-hash-table)))
-      
-      (define make-signature 
-	(let ((cload->signature 
+
+      (define make-signature
+	(let ((cload->signature
 	       (lambda* (type rtn)
 		 (case (C-type->s7-type type)
 		   ((real)      (if rtn 'float? 'real?))
@@ -252,7 +252,7 @@
 	       args)
 	      (let ((len (length sig)))
 		(set! sig (do ((sig sig (cdr sig)))
-			      ((not (and (pair? sig) 
+			      ((not (and (pair? sig)
 					 (pair? (cdr sig))
 					 (eq? (car sig) (cadr sig))))
 			       sig)))
@@ -261,11 +261,11 @@
 	      (unless (signatures sig)                    ; it's not in our collection yet
 		(let ((pl (make-string (+ (if cyclic 3 2) (length sig))))
 		      (loc (if cyclic 4 3)))
-		  (set! (pl 0) #\p) 
+		  (set! (pl 0) #\p)
 		  (if cyclic
 		      (begin (set! (pl 1) #\c) (set! (pl 2) #\l) (set! (pl 3) #\_))
 		      (begin (set! (pl 1) #\l) (set! (pl 2) #\_)))
-		  (for-each 
+		  (for-each
 		   (lambda (typer)
 		     (set! (pl loc) (signature->pl typer))
 		     (let ((count (or (assq typer sig-symbols)
@@ -275,7 +275,7 @@
 		   (cdr sig))
 		  (set! (signatures sig) pl)))
 	      sig))))
-      
+
       (define (initialize-c-file)
 	;; C header stuff
 	(set! p (open-output-file c-file-name))
@@ -289,15 +289,15 @@
 	       (format p "#include <~A>~%" header))
 	     headers))
 	(format p "#include \"s7.h\"~%~%"))
-      
+
       (define collides?
 	(let ((all-names ()))
 	  (lambda (name)
-	    (if (memq name all-names) 
+	    (if (memq name all-names)
 		(format *stderr* "~A twice?~%" name)
 		(set! all-names (cons name all-names)))
 	    name)))
-      
+
       (define* (add-one-function return-type name arg-types doc)
 	;; (format *stderr* "~A ~A ~A~%" return-type name arg-types): double j0 (double) for example
 	;; C function -> scheme
@@ -305,14 +305,14 @@
 	  (let ((num-args (length arg-types))
 		(base-name (string-append (if (> (length prefix) 0) prefix "s7_dl") "_" func-name)) ; not "g" -- collides with glib
 		(scheme-name (string-append prefix (if (> (length prefix) 0) ":" "") func-name)))
-	  
-	    (if (and (= num-args 1) 
+
+	    (if (and (= num-args 1)
 		     (eq? (car arg-types) 'void))
 		(set! num-args 0))
 	    (format p "~%/* -------- ~A -------- */~%" func-name)
 	    (format p "static s7_pointer ~A(s7_scheme *sc, s7_pointer ~A)~%" base-name (if (= num-args 1) 'arg 'args))
 	    (format p "{~%")
-	    
+
 	    ;; get the Scheme args, check their types, assign to local C variables
 	    (when (positive? num-args)
 	      (if (not (= num-args 1)) (format p "  s7_pointer arg;~%"))
@@ -324,7 +324,7 @@
 	      (do ((i 0 (+ i 1))
 		   (type arg-types (cdr type)))
 		  ((= i num-args))
-		
+
 		(let* ((nominal-type ((if (pair? (car type)) caar car) type))  ; double in the example
 		       (true-type    ((if (pair? (car type)) cadar car) type))
 		       (s7-type      (C-type->s7-type true-type)))                    ; real
@@ -342,20 +342,20 @@
 			    (format p "    ~A_~D = (~A)~A(~As7_car(arg));~%"
 				    base-name i
 				    nominal-type
-				    (s7->C true-type)                               ; s7_number_to_real which requires 
+				    (s7->C true-type)                               ; s7_number_to_real which requires
 				    (if (memq s7-type '(boolean real))              ;   the extra sc arg
 					"sc, " ""))
 			    (format p "  else return(s7_wrong_type_arg_error(sc, ~S, ~D, s7_car(arg), ~S));~%"
-				    func-name 
+				    func-name
 				    (if (= num-args 1) 0 (+ i 1))
-				    (if (symbol? s7-type) 
-					(symbol->string s7-type) 
+				    (if (symbol? s7-type)
+					(symbol->string s7-type)
 					(error 'bad-arg (format #f "in ~S, ~S is not a symbol~%" name s7-type)))))))
 		  (if (< i (- num-args 1))
 		      (format p "  arg = s7_cdr(arg);~%")))))
-	    
+
 	    ;; return C value to Scheme
-	    (if (pair? return-type) 
+	    (if (pair? return-type)
 		(set! return-type (cadr return-type)))
 	    (let ((return-translator (C->s7 return-type)))
 	      ;(format *stderr* "return ~A ~A~%" return-type return-translator)
@@ -380,7 +380,7 @@
 			    ");~%"
 			    ";~%  return(s7_unspecified(sc));~%"))
 	      (format p "}~%"))
-	    
+
 	    ;; add optimizer connection
 	    (define (sig-every? f sequence)
 	      (do ((arg sequence (cdr arg)))
@@ -409,7 +409,7 @@
 		   (set! local-name "_d_dddd")
 		   (format p "static s7_double ~A~A(s7_double x1, s7_double x2, s7_double x3, s7_double x4) {return(~A(x1, x2, x3, x4));}~%" func-name local-name func-name)))
 		(set! double-funcs (cons (list func-name scheme-name local-name) double-funcs))))
-	    
+
 	    (when (and (eq? return-type 'int)        ; int (f int|double|void)
 		       (or ;(= num-args 0)
 			   (and (= num-args 1)
@@ -434,21 +434,21 @@
 			 (set! local-name "_i_ii")
 			 (format p "static s7_int ~A~A(s7_int i1, s7_int i2) {return(~A(i1, i2));}~%" func-name local-name func-name)))))
 		(set! int-funcs (cons (list func-name scheme-name local-name) int-funcs))))
-	    
+
 	    (format p "~%")
-	    (set! functions (cons (list scheme-name base-name 
+	    (set! functions (cons (list scheme-name base-name
 					(if (and (string? doc)
 						 (> (length doc) 0))
 					    doc
 					    (format #f "~A ~A~A" return-type func-name arg-types))
-					num-args 0 
+					num-args 0
 					(make-signature return-type arg-types))
 				  functions)))))
-      
+
       (define (end-c-file)
 	;; now the init function
 	;;   the new scheme variables and functions are placed in the current environment
-	
+
 	(format p "void ~A(s7_scheme *sc);~%" init-name)
 	(format p "void ~A(s7_scheme *sc)~%" init-name)
 	(format p "{~%")
@@ -461,7 +461,7 @@
 	     (format p "~A~A~A" (cdr s) (if (< loc pls) (values "," " ") (values ";" #\newline)))
 	     (set! loc (+ loc 1)))
 	   signatures))
-	
+
 	(let ((syms ())
 	      (names ()))
 	  (for-each
@@ -483,7 +483,7 @@
 	 (lambda (sig)
 	   (let ((siglen (length (cdar sig)))
 		 (cyclic (char=? ((cdr sig) 1) #\c)))
-	     (format p (if cyclic 
+	     (format p (if cyclic
 			   (values "    ~A = s7_make_circular_signature(sc, ~D, ~D" (cdr sig) (- siglen 1) siglen)
 			   (values "    ~A = s7_make_signature(sc, ~D" (cdr sig) siglen)))
 	     (format p "~{~^, ~C~}" (substring (cdr sig) (if cyclic 4 3)))
@@ -491,13 +491,13 @@
 	 signatures)
 	(format p "  }~%~%")
 	(format p "  cur_env = s7_curlet(sc);~%") ; changed from s7_outlet(s7_curlet) 20-Aug-17
-	
+
 	;; send out any special initialization code
 	(for-each
 	 (lambda (init-str)
 	   (format p "  ~A~%" init-str))
 	 (reverse inits))
-	
+
 	;; "constants" -- actually variables in s7 because we want them to be local to the current environment (this comment is obsolete)
 	(if (pair? constants)
 	    (begin
@@ -509,19 +509,19 @@
 			(scheme-name (string-append prefix (if (> (length prefix) 0) ":" "") c-name))
 			(trans (C->s7 type)))
 		   (if (eq? trans 's7_make_c_pointer_with_type)
-		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A, s7_make_symbol(sc, ~S), s7_f(sc)));~%" 
+		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A, s7_make_symbol(sc, ~S), s7_f(sc)));~%"
 			       scheme-name
 			       trans
 			       (C->s7-cast type)
 			       c-name
 			       (if (eq? type 'c-pointer) "void*" (symbol->string type)))
-		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A));~%" 
+		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A));~%"
 			       scheme-name
 			       trans
 			       (C->s7-cast type)
 			       c-name))))
 	       constants)))
-	
+
 	;; C macros -- need #ifdef name #endif wrapper
 	(if (pair? macros)
 	    (begin
@@ -534,22 +534,22 @@
 			(trans (C->s7 type)))
 		   (format p "#ifdef ~A~%" c-name)
 		   (if (eq? trans 's7_make_c_pointer_with_type)
-		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), s7_make_c_pointer_with_type(sc, (~A)~A, s7_make_symbol(sc, \"~S\"), s7_f(sc)));~%" 
+		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), s7_make_c_pointer_with_type(sc, (~A)~A, s7_make_symbol(sc, \"~S\"), s7_f(sc)));~%"
 			       scheme-name
 			       (C->s7-cast type)
 			       c-name
 			       type)
-		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A));~%" 
+		       (format p "  s7_define(sc, cur_env, s7_make_symbol(sc, ~S), ~A(sc, (~A)~A));~%"
 			       scheme-name
 			       trans
 			       (C->s7-cast type)
 			       c-name))
 		   (format p "#endif~%")))
 	       macros)))
-	
+
 	;; functions
 	(for-each
-	 (lambda (f) 
+	 (lambda (f)
 	   (let ((scheme-name (f 0))
 		 (base-name   (f 1))
 		 (help        (f 2))
@@ -565,7 +565,7 @@
 		     help
 		     (if (pair? sig) (signatures sig) 'NULL))))
 	 functions)
-	
+
 	;; optimizer connection
 	(when (pair? double-funcs)
 	  (format p "~%  /* double optimizer connections */~%")
@@ -573,79 +573,79 @@
 	   (lambda (f)
 	     (format p "  s7_set~A_function(s7_name_to_value(sc, ~S), ~A~A);~%" (caddr f) (cadr f) (car f) (caddr f)))
 	   double-funcs))
-	
+
 	(when (pair? int-funcs)
 	  (format p "~%  /* int optimizer connections */~%")
 	  (for-each
 	   (lambda (f)
 	     (format p "  s7_set~A_function(s7_name_to_value(sc, ~S), ~A~A);~%" (caddr f) (cadr f) (car f) (caddr f)))
 	   int-funcs))
-	
+
 	(format p "}~%")
 	(close-output-port p)
-	
+
 	;; now we have the module .c file -- make it into a shared object, load it, delete the temp files
-	
+
 	(cond ((provided? 'osx)
 	       ;; I assume the caller is also compiled with these flags?
-	       (system (format #f "~A -c ~A -o ~A ~A ~A" 
+	       (system (format #f "~A -c ~A -o ~A ~A ~A"
 			       *cload-c-compiler* c-file-name o-file-name *cload-cflags* cflags))
-	       (system (format #f "~A ~A -o ~A -dynamic -bundle -undefined suppress -flat_namespace ~A ~A" 
+	       (system (format #f "~A ~A -o ~A -dynamic -bundle -undefined suppress -flat_namespace ~A ~A"
 			       *cload-c-compiler* o-file-name so-file-name *cload-ldflags* ldflags)))
-	      
+
 	      ((provided? 'freebsd)
-	       (system (format #f "cc -fPIC -c ~A -o ~A ~A ~A" 
+	       (system (format #f "cc -fPIC -c ~A -o ~A ~A ~A"
 			       c-file-name o-file-name *cload-cflags* cflags))
-	       (system (format #f "cc ~A -shared -o ~A ~A ~A" 
+	       (system (format #f "cc ~A -shared -o ~A ~A ~A"
 			       o-file-name so-file-name *cload-ldflags* ldflags)))
-	      
+
 	      ((provided? 'openbsd)
-	       (system (format #f "~A -fPIC -ftrampolines -c ~A -o ~A ~A ~A" 
+	       (system (format #f "~A -fPIC -ftrampolines -c ~A -o ~A ~A ~A"
 			       *cload-c-compiler* c-file-name o-file-name *cload-cflags* cflags))
-	       (system (format #f "~A ~A -shared -o ~A ~A ~A" 
+	       (system (format #f "~A ~A -shared -o ~A ~A ~A"
 			       *cload-c-compiler* o-file-name so-file-name *cload-ldflags* ldflags)))
-	      
+
 	      ((provided? 'sunpro_c) ; just guessing here...
-	       (system (format #f "cc -c ~A -o ~A ~A ~A" 
+	       (system (format #f "cc -c ~A -o ~A ~A ~A"
 			       c-file-name o-file-name *cload-cflags* cflags))
-	       (system (format #f "cc ~A -G -o ~A ~A ~A" 
+	       (system (format #f "cc ~A -G -o ~A ~A ~A"
 			       o-file-name so-file-name *cload-ldflags* ldflags)))
-	      
+
 	      (else
-	       (system (format #f "~A -fPIC -c ~A -o ~A ~A ~A" 
+	       (system (format #f "~A -fPIC -c ~A -o ~A ~A ~A"
 			       *cload-c-compiler* c-file-name o-file-name *cload-cflags* cflags))
-	       (system (format #f "~A ~A -shared -o ~A ~A ~A" 
+	       (system (format #f "~A ~A -shared -o ~A ~A ~A"
 			       *cload-c-compiler* o-file-name so-file-name *cload-ldflags* ldflags)))))
-      
-      (define handle-declaration 
+
+      (define handle-declaration
 	(let ()
 	  (define (add-one-constant type name)
 	    ;; C constant -> scheme
 	    (let ((c-type (if (pair? type) (cadr type) type)))
 	      (if (symbol? name)
 		  (set! constants (cons (list c-type (symbol->string (collides? name))) constants))
-		  (for-each 
+		  (for-each
 		   (lambda (c)
 		     (set! constants (cons (list c-type (symbol->string (collides? c))) constants)))
 		   name))))
-	  
+
 	  (define (add-one-macro type name)
 	    ;; C macro (with definition check) -> scheme
 	    (let ((c-type (if (pair? type) (cadr type) type)))
 	      (if (symbol? name)
 		  (set! macros (cons (list c-type (symbol->string (collides? name))) macros))
-		  (for-each 
+		  (for-each
 		   (lambda (c)
 		     (set! macros (cons (list c-type (symbol->string (collides? c))) macros)))
 		   name))))
-	  
+
 	  (define (check-doc func-data)
 	    (let ((doc (caddr func-data)))
 	      (if (and (string? doc)
 		       (> (length doc) 0))
 		  func-data
 		  (append (list (car func-data) (cadr func-data) (car func-data)) (cdddr func-data)))))
-	  
+
 	  (lambda (func)
 	    ;; functions
 	    (if (>= (length func) 3)
@@ -656,8 +656,8 @@
 		  ((C-macro)    (apply add-one-macro (cadr func)))
 		  ((C-function) (collides? (caadr func)) (set! functions (cons (check-doc (cadr func)) functions)))
 		  (else         (apply add-one-constant func)))))))
-      
-      
+
+
       ;; c-define-1 (called in c-define macro above)
       (unless (and output-name
 		   (file-exists? c-file-name)
@@ -669,15 +669,15 @@
 	(format *stderr* "writing ~A~%" c-file-name)
 	;; write a new C file and compile it
 	(initialize-c-file)
-	
+
 	(if (and (pair? (cdr function-info))
 		 (symbol? (cadr function-info)))
 	    (handle-declaration function-info)
 	    (for-each handle-declaration function-info))
-	
+
 	(end-c-file)
 	(delete-file o-file-name))
-      
+
       ;; load the object file, clean up
       (varlet cur-env 'init_func (string->symbol init-name))
       (format *stderr* "loading ~A~%" so-file-name)
