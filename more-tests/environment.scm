@@ -26,11 +26,15 @@
                                ,@body
                                (curlet))))))
 
-(define-macro (pretty-expand . body)
-              `(begin
-                 (format #t "~%~%")
-                 (pretty-print (macroexpand ,@body))
-                 (format #t "~%~%")))
+(if (defined? 'pretty-expand)
+  (format #t "pretty-expand already defined~%")
+  (begin
+    (format #t "pretty-expand must be defined~%")
+    (define-macro (pretty-expand . body)
+                  `(begin
+                     (format #t "~%~%")
+                     (pretty-print (macroexpand ,@body))
+                     (format #t "~%~%")))))
 
 (pretty-expand
   (define-new-env *t-env*

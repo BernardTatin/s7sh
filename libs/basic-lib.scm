@@ -46,6 +46,12 @@
 ;; using xt-provide
 (xt-provide 'basic-lib.scm)
 
+(define-macro (pretty-expand . body)
+              `(begin
+                 (format #t "~%~%")
+                 (pretty-print (macroexpand ,@body))
+                 (format #t "~%~%")))
+
 #|
 ;; debugging xt-provide
 (when (and (not *quiet*) (not (defined? 'pretty-print)))
