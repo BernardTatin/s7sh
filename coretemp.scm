@@ -14,7 +14,7 @@
     (load "libgtk_s7.so" (define *gtk* (inlet 'init_func 'libgtk_s7_init))))
 
   ;; run our script displaying cpu temperatures
-  (with-let (sublet *gtk* 
+  (with-let (sublet *gtk*
 	      :app (GTK_APPLICATION *gtk-app*) ; from the loading environment
 	      :*libc* *libc*)
 
@@ -31,7 +31,7 @@
       (gtk_label_set_text (GTK_LABEL data) (format #f " ~{~,1F   ~}" (temps)))
       #t)
 
-    (define (hostname) 
+    (define (hostname)
       (caddr ((*libc* 'uname))))
 
     (let ((window (gtk_application_window_new app))
