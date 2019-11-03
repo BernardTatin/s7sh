@@ -52,7 +52,7 @@
                  (pretty-print (macroexpand ,@body))
                  (format #t "~%~%")))
 
-#|
+
 ;; debugging xt-provide
 (when (and (not *quiet*) (not (defined? 'pretty-print)))
   (load "write.scm"))
@@ -67,8 +67,8 @@
     (show-list "*features*" *features*)
     (show-list "*load-path*:" *load-path*)
     (format #t "~%")
-    (pretty-print (macroexpand (xt-provide 'basic-lib.scm)))
+    (pretty-expand (xt-provide 'basic-lib.scm))
     (format #t "~%~%")))
-|#
+
 ;; (display "basic-lib.scm loaded!!!")
 ;; (newline)

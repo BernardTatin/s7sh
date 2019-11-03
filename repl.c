@@ -291,9 +291,9 @@ int main(int argc, char **argv) {
     }
     add_lib_dir(sc, s7_home);
     add_lib_dir(sc, s7_libs);
-    load_scm(sc, concat(s7_libs, "basic-lib.scm"));
     set_scm_configuration(sc);
     set_scm_environment(sc);
+    load_scm(sc, concat(s7_libs, "basic-lib.scm"));
     if (ret_value == SUCCESS) {
         ret_value = load_base_lib(sc);
         if (ret_value == SUCCESS && !is_batch) {
