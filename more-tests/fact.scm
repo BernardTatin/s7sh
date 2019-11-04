@@ -1,8 +1,9 @@
-;; 
+;;
 ;; fact.scm
 ;;
 
 (xt-provide 'fact.scm)
+(load "stuff.scm")
 
 (define (fact0 N)
   (define (inner-fact acc k)
@@ -12,21 +13,45 @@
 
   (inner-fact 1 N))
 
-(define fact 
+(define fact
   (let ()
-    (define (inner-fact acc k) 
+    (define (inner-fact acc k)
       (if (< k 2)
           acc
           (inner-fact (* k acc) (- k 1))))
     (lambda (N)
       (inner-fact 1 N))))
 
-(let ((show-list (lambda (list-name L)
-                   (format #t "-------------------------------~%")
-                   (format #t "~A~%" list-name)
-                   (for-each (lambda(e)
-                               (format #t "+ ~A~%" e))
-                             L))))
+(define-class Int ()
+              '((value 0)))
 
-  (show-list "*features*" *features*)
-  (show-list "*load-path*:" *load-path*))
+(define (new-Int k)
+  (if (not (integer? k))
+    #f
+    (let ((i (make-Int)))
+      (set! (i 'value) k)
+      i)))
+
+(define-generic factg)
+(define-method (factg (N Int))
+               (define (inner-fact acc k)
+                 (if (< k 2)
+                   acc
+                   (inner-fact (* k acc) (- k 1))))
+
+               (inner-fact 1 (N 'value)))
+
+(define-method (decN (N Int))
+               (set! (N 'value) (- (N 'value) 1)))
+
+(define-method (incN (N Int))
+               (set! (N 'value) (+ (N 'value) 1)))
+
+
+(define-method (display-fact-N (N Int))
+               (let ((vN (N 'value)))
+                 (format #t "~A! = ~A~%"
+                         vN
+                         (factg N))))
+(define N (new-Int 5))
+(display-fact-N N)
