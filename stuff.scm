@@ -394,14 +394,14 @@
        ,@body)))
 
 (define-macro (while test . body)      ; while loop with predefined break and continue
-  `(call-with-exit
-    (lambda (break)
-      (let continue ()
-	(if (let () ,test)
-	    (begin
-	      (let () ,@body)
-	      (continue))
-	    (break))))))
+              `(call-with-exit
+                 (lambda (break)
+                   (let continue ()
+                     (if (let () ,test)
+                       (begin
+                         (let () ,@body)
+                         (continue))
+                       (break))))))
 
 (define-macro (do* spec end . body)
   `(let* ,(map (lambda (var)
