@@ -46,6 +46,13 @@
 ;; using xt-provide
 (xt-provide 'basic-lib.scm)
 
+(define-macro (xt-require feature)
+              `(if (in-features? ,feature)
+                 (require ,feature)
+                 (let ()
+                   (let ((file-name (symbol->string ,feature)))
+                     (load file-name)))))
+
 (define-macro (pretty-expand . body)
               `(begin
                  (format #t "~%~%")
@@ -68,7 +75,10 @@
     (show-list "*load-path*:" *load-path*)
     (format #t "~%")
     (pretty-expand (xt-provide 'basic-lib.scm))
+    (pretty-expand (xt-require 'basic-lib.scm))
     (format #t "~%~%")))
 
-;; (display "basic-lib.scm loaded!!!")
-;; (newline)
+#|
+(display "basic-lib.scm loaded!!!")
+(newline)
+|#

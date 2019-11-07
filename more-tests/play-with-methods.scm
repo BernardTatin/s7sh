@@ -2,9 +2,8 @@
 ;; play-with-methods
 ;;
 
-(load "stuff.scm")
-(when (not (defined? 'pretty-print))
-  (load "write.scm"))
+(xt-require 'stuff.scm)
+(xt-require 'write.scm)
 
 (define-macro (for-int idx from to initialize . body)
               `(let ()

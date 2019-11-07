@@ -1,4 +1,4 @@
-;; 
+;;
 ;; path-to-list.scm
 ;;
 
@@ -23,11 +23,11 @@
                         (substring new-path (+ 1 position))))))
   (mk-path-list '() path))
 
-(define file-exec? 
-  (let () 
-    (c-define '((int X_OK) (int access (char* int))) 
-              "" 
-              "unistd.h") 
+(define file-exec?
+  (let ()
+    (c-define '((int X_OK) (int access (char* int)))
+              ""
+              "unistd.h")
     (lambda (arg) (= (access arg X_OK) 0))))
 
 (define (fill-path-hash path)
